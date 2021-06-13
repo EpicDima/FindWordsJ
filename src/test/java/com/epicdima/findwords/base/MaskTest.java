@@ -1,0 +1,183 @@
+package com.epicdima.findwords.base;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+public abstract class MaskTest {
+    protected static final int ROWS = 16;
+    protected static final int COLS = 16;
+
+    protected abstract Mask createMask();
+
+    @Test
+    void setAndGet() {
+        Mask mask = createMask();
+
+        mask.set(0, 0, true);
+        mask.set(0, 1, true);
+        mask.set(1, 0, true);
+        mask.set(1, 1, true);
+        mask.set(ROWS - 1, COLS - 1, true);
+
+        Assertions.assertTrue(mask.get(0, 0));
+        Assertions.assertTrue(mask.get(0, 1));
+        Assertions.assertTrue(mask.get(1, 0));
+        Assertions.assertTrue(mask.get(1, 1));
+        Assertions.assertTrue(mask.get(ROWS - 1, COLS - 1));
+
+        mask.set(0, 0, false);
+        mask.set(0, 1, false);
+        mask.set(1, 0, false);
+        mask.set(1, 1, false);
+        mask.set(ROWS - 1, COLS - 1, false);
+
+        Assertions.assertFalse(mask.get(0, 0));
+        Assertions.assertFalse(mask.get(0, 1));
+        Assertions.assertFalse(mask.get(1, 0));
+        Assertions.assertFalse(mask.get(1, 1));
+        Assertions.assertFalse(mask.get(ROWS - 1, COLS - 1));
+    }
+
+    @Test
+    void copy() {
+        Mask source = createMask();
+
+        source.set(0, 0, true);
+        source.set(0, 1, true);
+        source.set(1, 0, true);
+        source.set(1, 1, true);
+        source.set(ROWS - 1, COLS - 1, true);
+
+        Mask mask = source.copy();
+
+        Assertions.assertTrue(mask.get(0, 0));
+        Assertions.assertTrue(mask.get(0, 1));
+        Assertions.assertTrue(mask.get(1, 0));
+        Assertions.assertTrue(mask.get(1, 1));
+        Assertions.assertTrue(mask.get(ROWS - 1, COLS - 1));
+    }
+
+    @Test
+    void isAllTrue() {
+        Mask mask = createMask();
+
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                Assertions.assertFalse(mask.isAllTrue());
+                mask.set(i, j, true);
+            }
+        }
+
+        Assertions.assertTrue(mask.isAllTrue());
+    }
+
+    @Test
+    void isAllFalse() {
+        Mask mask = createMask();
+
+        Assertions.assertTrue(mask.isAllFalse());
+
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                mask.set(i, j, true);
+                Assertions.assertFalse(mask.isAllFalse());
+            }
+        }
+    }
+
+    @Test
+    void and() {
+        Mask mask1 = createMask();
+        Mask mask2 = createMask();
+
+        mask1.and(mask2);
+        Assertions.assertTrue(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+
+        mask1.set(0, 0, true);
+        mask1.and(mask2);
+        Assertions.assertTrue(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+
+        mask1.set(0, 0, true);
+        mask2.set(0, 0, true);
+        mask1.and(mask2);
+        Assertions.assertFalse(mask1.isAllFalse());
+        Assertions.assertFalse(mask2.isAllFalse());
+        Assertions.assertTrue(mask1.get(0, 0));
+        Assertions.assertTrue(mask2.get(0, 0));
+
+        mask1.set(0, 0, false);
+        mask1.and(mask2);
+        Assertions.assertTrue(mask1.isAllFalse());
+        Assertions.assertFalse(mask2.isAllFalse());
+        Assertions.assertFalse(mask1.get(0, 0));
+        Assertions.assertTrue(mask2.get(0, 0));
+    }
+
+    @Test
+    void or() {
+        Mask mask1 = createMask();
+        Mask mask2 = createMask();
+
+        mask1.or(mask2);
+        Assertions.assertTrue(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+
+        mask1.set(0, 0, true);
+        mask1.or(mask2);
+        Assertions.assertFalse(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+        Assertions.assertTrue(mask1.get(0, 0));
+
+        mask2.set(0, 0, true);
+        mask1.or(mask2);
+        Assertions.assertFalse(mask1.isAllFalse());
+        Assertions.assertFalse(mask2.isAllFalse());
+        Assertions.assertTrue(mask1.get(0, 0));
+        Assertions.assertTrue(mask2.get(0, 0));
+
+        mask2.set(0, 0, false);
+        mask1.or(mask2);
+        Assertions.assertFalse(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+        Assertions.assertTrue(mask1.get(0, 0));
+        Assertions.assertFalse(mask2.get(0, 0));
+    }
+
+    @Test
+    void invert() {
+        Mask mask = createMask();
+
+        Assertions.assertTrue(mask.isAllFalse());
+
+        mask.invert();
+        Assertions.assertTrue(mask.isAllTrue());
+
+        mask.invert();
+        Assertions.assertTrue(mask.isAllFalse());
+
+        mask.set(0, 0, true);
+        mask.invert();
+        Assertions.assertFalse(mask.isAllFalse());
+        Assertions.assertFalse(mask.isAllTrue());
+        Assertions.assertFalse(mask.get(0, 0));
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        Mask mask1 = createMask();
+        Mask mask2 = createMask();
+
+        Assertions.assertEquals(mask1, mask2);
+        Assertions.assertEquals(mask1, mask1.copy());
+        Assertions.assertEquals(mask2, mask2.copy());
+
+        mask1.set(0, 0, true);
+        mask2.set(ROWS - 1, COLS - 1, true);
+        Assertions.assertEquals(mask1, mask1.copy());
+        Assertions.assertEquals(mask2, mask2.copy());
+
+        Assertions.assertNotEquals(mask1, mask2);
+    }
+}
