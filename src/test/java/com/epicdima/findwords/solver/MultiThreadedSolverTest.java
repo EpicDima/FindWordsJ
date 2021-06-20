@@ -9,6 +9,6 @@ public class MultiThreadedSolverTest extends SolverTest {
 
     @Override
     protected Solver createSolver() {
-        return new MultiThreadedSolver(HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
+        return new MultiThreadedSolver(linesSeparator, HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
     }
 }

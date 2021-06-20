@@ -9,6 +9,6 @@ public class DefaultSolverTest extends SolverTest {
 
     @Override
     protected Solver createSolver() {
-        return new DefaultSolver(HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
+        return new DefaultSolver(linesSeparator, HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
     }
 }

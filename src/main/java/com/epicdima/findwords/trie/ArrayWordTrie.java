@@ -2,22 +2,17 @@ package com.epicdima.findwords.trie;
 
 import com.epicdima.findwords.base.WordTrie;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 /**
  * Могут быть проблемы, так как при операции % может быть одинаковое число при конвертации символа (char) в int
  */
 public class ArrayWordTrie implements WordTrie {
-
     private final Node root;
     private final int abcLength;
 
@@ -27,10 +22,18 @@ public class ArrayWordTrie implements WordTrie {
     }
 
     public static WordTrie createInstance(String dictionaryPath) {
+        try {
+            return createInstance(new FileInputStream(dictionaryPath));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static WordTrie createInstance(InputStream inputStream) {
         List<String> words = new ArrayList<>();
         Set<Character> abc = new HashSet<>();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictionaryPath), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String word;
             while ((word = reader.readLine()) != null) {
                 words.add(word);
@@ -86,13 +89,12 @@ public class ArrayWordTrie implements WordTrie {
 
     @Override
     public boolean containsSubstring(final String substring) {
-        final int length = substring.length();
         int index = 0;
 
         Node node = root;
 
         while (node != null) {
-            if (index == length) {
+            if (index == substring.length()) {
                 return true;
             }
 
@@ -104,13 +106,12 @@ public class ArrayWordTrie implements WordTrie {
 
     @Override
     public boolean containsWord(final String word) {
-        final int length = word.length();
         int index = 0;
 
         Node node = root;
 
         while (node != null) {
-            if (index == length) {
+            if (index == word.length()) {
                 return node.isWord;
             }
 

@@ -1,167 +1,24 @@
 package com.epicdima.findwords.solver;
 
 import com.epicdima.findwords.base.Mask;
-import com.epicdima.findwords.base.Solver;
 import com.epicdima.findwords.base.WordAndMask;
 import com.epicdima.findwords.base.WordTrie;
-import com.epicdima.findwords.mask.BitSetMask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
-import java.util.stream.Collectors;
 
-public class ForkJoinSolver implements Solver {
-    private static final String LINE_SEPARATOR = "\n";
-    private static final char BLOCKED = ' ';
-
+public class ForkJoinSolver extends MultiThreadedSolver {
     private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
-    private final WordTrie trie;
-    private final List<WordAndMask> words = new ArrayList<>();
-    private final List<boolean[]> rawFullMatchesResults = Collections.synchronizedList(new ArrayList<>());
-    private final List<List<WordAndMask>> fullMatches = new ArrayList<>();
-    private int minWordLength;
-    private int maxWordLength;
-    private int rows;
-    private int cols;
-    private char[][] matrix;
-    private Mask originalMask;
 
-    public ForkJoinSolver(WordTrie trie) {
-        this.trie = trie;
+    public ForkJoinSolver(String linesSeparator, WordTrie trie) {
+        super(linesSeparator, trie);
     }
 
-    public void solve(String matrixText, int minWordLength, int maxWordLength, boolean fullMatch) {
-        preSolve(matrixText, minWordLength, maxWordLength);
-
-        words.addAll(findWords());
-
-        for (WordAndMask wordAndMask : words) {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    wordAndMask.mask.set(i, j, wordAndMask.mask.get(i, j) & !originalMask.get(i, j));
-                }
-            }
-        }
-
-        if (fullMatch) {
-            findFullMatches();
-        }
-    }
-
-    @Override
-    public List<WordAndMask> getWords() {
-        return new ArrayList<>(words);
-    }
-
-    @Override
-    public List<List<WordAndMask>> getFullMatches() {
-        return new ArrayList<>(fullMatches);
-    }
-
-    private void preSolve(String matrixText, int minWordLength, int maxWordLength) {
-        this.minWordLength = minWordLength;
-        this.maxWordLength = maxWordLength;
-
-        List<String> lines = Arrays
-                .stream(matrixText.split(LINE_SEPARATOR))
-                .collect(Collectors.toList());
-
-        rows = lines.size();
-        cols = lines.get(0).length();
-
-        matrix = new char[rows][cols];
-        originalMask = new BitSetMask(rows, cols);
-
-        words.clear();
-        rawFullMatchesResults.clear();
-        fullMatches.clear();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                char ch = lines.get(i).charAt(j);
-                matrix[i][j] = ch;
-                originalMask.set(i, j, ch == BLOCKED);
-            }
-        }
-    }
-
-    private void findFullMatches() {
-        ffff(words);
-
-        for (boolean[] indexes : rawFullMatchesResults) {
-            List<WordAndMask> fullMatch = new ArrayList<>();
-
-            for (int i = 0; i < indexes.length; i++) {
-                if (indexes[i]) {
-                    fullMatch.add(words.get(i));
-                }
-            }
-
-            fullMatches.add(fullMatch);
-        }
-    }
-
-    private Set<WordAndMask> findWords() {
-        Set<WordAndMask> wordsAndMasks = new HashSet<>();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (!originalMask.get(i, j)) {
-                    originalMask.set(i, j, true);
-                    f(String.valueOf(matrix[i][j]), i, j, originalMask, wordsAndMasks);
-                    originalMask.set(i, j, false);
-                }
-            }
-        }
-
-        return wordsAndMasks;
-    }
-
-    private void f(String word, int x, int y, Mask mask, Set<WordAndMask> wordsAndMasks) {
-        if (word.length() >= minWordLength && trie.containsWord(word)) {
-            wordsAndMasks.add(new WordAndMask(word, mask.copy()));
-        }
-
-        if (word.length() > maxWordLength || !trie.containsSubstring(word)) {
-            return;
-        }
-
-        int x2 = x + 1;
-
-        if (x2 < rows && !mask.get(x2, y)) {
-            mask.set(x2, y, true);
-            f(word + matrix[x2][y], x2, y, mask, wordsAndMasks);
-            mask.set(x2, y, false);
-        }
-
-        x2 = x - 1;
-
-        if (x2 >= 0 && !mask.get(x2, y)) {
-            mask.set(x2, y, true);
-            f(word + matrix[x2][y], x2, y, mask, wordsAndMasks);
-            mask.set(x2, y, false);
-        }
-
-        int y2 = y + 1;
-
-        if (y2 < cols && !mask.get(x, y2)) {
-            mask.set(x, y2, true);
-            f(word + matrix[x][y2], x, y2, mask, wordsAndMasks);
-            mask.set(x, y2, false);
-        }
-
-        y2 = y - 1;
-
-        if (y2 >= 0 && !mask.get(x, y2)) {
-            mask.set(x, y2, true);
-            f(word + matrix[x][y2], x, y2, mask, wordsAndMasks);
-            mask.set(x, y2, false);
-        }
-    }
-
-    private void ffff(List<WordAndMask> matchedWords) {
+    protected void ffff(List<WordAndMask> matchedWords) {
         List<Mask> masks = getRawMasks(matchedWords);
         int[] minXY = getMinXAndMinY(masks);
 
@@ -169,13 +26,15 @@ public class ForkJoinSolver implements Solver {
 
         int length = masks.size();
         for (int i = 0; i < length; i++) {
-            Mask mask = masks.get(i);
-
-            if (mask.get(minXY[0], minXY[1])) {
-                Mask temp1 = mask.copy().or(originalMask);
-                boolean[] temp2 = new boolean[length];
-                temp2[i] = true;
-                tasks.add(forkJoinPool.submit(new F2Action(temp1, temp2, 0, masks)));
+            if (masks.get(i).get(minXY[0], minXY[1])) {
+                boolean[] indexes = new boolean[length];
+                indexes[i] = true;
+                tasks.add(forkJoinPool.submit(new F2Action(
+                        masks.get(i).copy().or(originalMask),
+                        indexes,
+                        0,
+                        masks)
+                ));
             }
         }
 
@@ -184,47 +43,8 @@ public class ForkJoinSolver implements Solver {
         }
     }
 
-    private List<Mask> getRawMasks(List<WordAndMask> matchedWords) {
-        Mask invertedOriginalMask = originalMask.copy().invert();
-
-        List<Mask> masks = new ArrayList<>(matchedWords.size());
-        for (WordAndMask matchedWord : matchedWords) {
-            masks.add(matchedWord.mask.copy().and(invertedOriginalMask));
-        }
-
-        return masks;
-    }
-
-    private int[] getMinXAndMinY(List<Mask> masks) {
-        int[][] count = new int[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                for (Mask mask : masks) {
-                    if (mask.get(i, j)) {
-                        count[i][j]++;
-                    }
-                }
-            }
-        }
-
-        int min = Integer.MAX_VALUE;
-        int minX = 0, minY = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (count[i][j] < min) {
-                    min = count[i][j];
-                    minX = i;
-                    minY = j;
-                }
-            }
-        }
-
-        return new int[]{minX, minY};
-    }
-
 
     private class F2Action extends RecursiveAction {
-
         private final Mask mask;
         private final boolean[] indexes;
         private final int start;
@@ -247,11 +67,10 @@ public class ForkJoinSolver implements Solver {
             List<ForkJoinTask<Void>> tasks = new ArrayList<>();
 
             for (int i = start; i < indexes.length; i++) {
-                if (mask.copy().and(masks.get(i)).isAllFalse()) {
-                    Mask temp1 = mask.copy().or(masks.get(i));
-                    boolean[] temp2 = Arrays.copyOf(indexes, indexes.length);
-                    temp2[i] = true;
-                    tasks.add(new F2Action(temp1, temp2, i, masks).fork());
+                if (mask.notIntersects(masks.get(i))) {
+                    boolean[] indexesCopy = Arrays.copyOf(indexes, indexes.length);
+                    indexesCopy[i] = true;
+                    tasks.add(new F2Action(mask.copy().or(masks.get(i)), indexesCopy, i, masks).fork());
                 }
             }
 

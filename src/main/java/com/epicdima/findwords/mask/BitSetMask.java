@@ -65,6 +65,11 @@ public class BitSetMask implements Mask {
     }
 
     @Override
+    public boolean notIntersects(Mask another) {
+        return !bitSet.intersects(((BitSetMask) another).bitSet);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

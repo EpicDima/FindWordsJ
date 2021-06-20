@@ -9,6 +9,6 @@ public class FastSolverTest extends SolverTest {
 
     @Override
     protected Solver createSolver() {
-        return new FastSolver(HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
+        return new FastSolver(linesSeparator, HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
     }
 }

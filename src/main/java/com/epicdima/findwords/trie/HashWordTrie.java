@@ -2,25 +2,29 @@ package com.epicdima.findwords.trie;
 
 import com.epicdima.findwords.base.WordTrie;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HashWordTrie implements WordTrie {
-
     private final Node root = new Node();
 
     private HashWordTrie() {
     }
 
     public static WordTrie createInstance(String dictionaryPath) {
+        try {
+            return createInstance(new FileInputStream(dictionaryPath));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static WordTrie createInstance(InputStream inputStream) {
         WordTrie trie = new HashWordTrie();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictionaryPath), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String word;
             while ((word = reader.readLine()) != null) {
                 trie.insert(word);

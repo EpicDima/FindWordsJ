@@ -9,6 +9,7 @@ public final class Matrices {
             "иривксоу\n" +
             "баорпутг\n" +
             "регакшак";
+
     public static final String matrix10x10 = "креплкшкпо\n" +
             "дисдеамауд\n" +
             "авлтунифшк\n" +
@@ -19,6 +20,7 @@ public final class Matrices {
             "иньлелкиое\n" +
             "огратьовлр\n" +
             "боевваннаь";
+
     public static final String matrix23x26 = "ьтсонбоптоасткич\n" +
             "тблагоссобдмахан\n" +
             "аеиноспецанирува\n" +
@@ -42,6 +44,7 @@ public final class Matrices {
             "ваняълатисилабое\n" +
             "ыйдизаканапияиод\n" +
             "ровватнилыпзацлз";
+
     public static final String matrix19x4 = "ласт\n" +
             "ласа\n" +
             "ларь\n" +
@@ -61,6 +64,7 @@ public final class Matrices {
             "анид\n" +
             "алла\n" +
             "авар";
+
     public static final String matrix11x8 = "говянаут\n" +
             "закдиара\n" +
             "вхиурван\n" +

@@ -7,6 +7,6 @@ public class BitSetMaskTest extends MaskTest {
 
     @Override
     protected Mask createMask() {
-        return new BitSetMask(MaskTest.ROWS, MaskTest.COLS);
+        return new BitSetMask(rows, cols);
     }
 }

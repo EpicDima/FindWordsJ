@@ -1,6 +1,7 @@
 package com.epicdima.findwords.base;
 
 public interface Mask {
+
     boolean get(int i, int j);
 
     void set(int i, int j, boolean value);
@@ -16,4 +17,6 @@ public interface Mask {
     Mask or(Mask another);
 
     Mask invert();
+
+    boolean notIntersects(Mask another);
 }

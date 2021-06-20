@@ -9,6 +9,6 @@ public class ForkJoinSolverTest extends SolverTest {
 
     @Override
     protected Solver createSolver() {
-        return new ForkJoinSolver(HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
+        return new ForkJoinSolver(linesSeparator, HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
     }
 }

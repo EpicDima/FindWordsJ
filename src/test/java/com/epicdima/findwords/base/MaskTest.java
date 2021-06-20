@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public abstract class MaskTest {
-    protected static final int ROWS = 16;
-    protected static final int COLS = 16;
+    protected final int rows = 16;
+    protected final int cols = 16;
 
     protected abstract Mask createMask();
 
@@ -17,25 +17,25 @@ public abstract class MaskTest {
         mask.set(0, 1, true);
         mask.set(1, 0, true);
         mask.set(1, 1, true);
-        mask.set(ROWS - 1, COLS - 1, true);
+        mask.set(rows - 1, cols - 1, true);
 
         Assertions.assertTrue(mask.get(0, 0));
         Assertions.assertTrue(mask.get(0, 1));
         Assertions.assertTrue(mask.get(1, 0));
         Assertions.assertTrue(mask.get(1, 1));
-        Assertions.assertTrue(mask.get(ROWS - 1, COLS - 1));
+        Assertions.assertTrue(mask.get(rows - 1, cols - 1));
 
         mask.set(0, 0, false);
         mask.set(0, 1, false);
         mask.set(1, 0, false);
         mask.set(1, 1, false);
-        mask.set(ROWS - 1, COLS - 1, false);
+        mask.set(rows - 1, cols - 1, false);
 
         Assertions.assertFalse(mask.get(0, 0));
         Assertions.assertFalse(mask.get(0, 1));
         Assertions.assertFalse(mask.get(1, 0));
         Assertions.assertFalse(mask.get(1, 1));
-        Assertions.assertFalse(mask.get(ROWS - 1, COLS - 1));
+        Assertions.assertFalse(mask.get(rows - 1, cols - 1));
     }
 
     @Test
@@ -46,7 +46,7 @@ public abstract class MaskTest {
         source.set(0, 1, true);
         source.set(1, 0, true);
         source.set(1, 1, true);
-        source.set(ROWS - 1, COLS - 1, true);
+        source.set(rows - 1, cols - 1, true);
 
         Mask mask = source.copy();
 
@@ -54,15 +54,15 @@ public abstract class MaskTest {
         Assertions.assertTrue(mask.get(0, 1));
         Assertions.assertTrue(mask.get(1, 0));
         Assertions.assertTrue(mask.get(1, 1));
-        Assertions.assertTrue(mask.get(ROWS - 1, COLS - 1));
+        Assertions.assertTrue(mask.get(rows - 1, cols - 1));
     }
 
     @Test
     void isAllTrue() {
         Mask mask = createMask();
 
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 Assertions.assertFalse(mask.isAllTrue());
                 mask.set(i, j, true);
             }
@@ -77,8 +77,8 @@ public abstract class MaskTest {
 
         Assertions.assertTrue(mask.isAllFalse());
 
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 mask.set(i, j, true);
                 Assertions.assertFalse(mask.isAllFalse());
             }
@@ -165,6 +165,31 @@ public abstract class MaskTest {
     }
 
     @Test
+    void notIntersects() {
+        Mask mask1 = createMask();
+        Mask mask2 = createMask();
+
+        Assertions.assertTrue(mask1.notIntersects(mask2));
+
+        mask1.set(0, 0, true);
+        Assertions.assertTrue(mask1.notIntersects(mask2));
+
+        mask1.set(0, 0, false);
+        mask2.set(0, 0, true);
+        Assertions.assertTrue(mask1.notIntersects(mask2));
+
+        mask1.set(0, 0, true);
+        Assertions.assertFalse(mask1.notIntersects(mask2));
+
+        mask1.set(0, 0, false);
+        mask1.set(1, 1, true);
+        Assertions.assertTrue(mask1.notIntersects(mask2));
+
+        mask2.set(1, 1, true);
+        Assertions.assertFalse(mask1.notIntersects(mask2));
+    }
+
+    @Test
     void testEqualsAndHashCode() {
         Mask mask1 = createMask();
         Mask mask2 = createMask();
@@ -174,7 +199,7 @@ public abstract class MaskTest {
         Assertions.assertEquals(mask2, mask2.copy());
 
         mask1.set(0, 0, true);
-        mask2.set(ROWS - 1, COLS - 1, true);
+        mask2.set(rows - 1, cols - 1, true);
         Assertions.assertEquals(mask1, mask1.copy());
         Assertions.assertEquals(mask2, mask2.copy());
 
