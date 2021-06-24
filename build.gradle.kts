@@ -1,7 +1,9 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     java
     id("me.champeau.jmh") version "0.6.5"
-    id("org.mikeneck.graalvm-native-image") version "v1.4.0"
+    id("org.mikeneck.graalvm-native-image") version "1.4.0"
 }
 
 group = "com.epicdima.findwords"
@@ -33,11 +35,13 @@ val jar by tasks.getting(Jar::class) {
     }
 }
 
-nativeImage {
-    graalVmHome = System.getenv("JAVA_HOME")
-    buildType { build ->
-        build.executable(main = "com.epicdima.findwords.Runner")
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    nativeImage {
+        graalVmHome = System.getenv("JAVA_HOME")
+        buildType { build ->
+            build.executable(main = "com.epicdima.findwords.Runner")
+        }
+        executableName = "FindWordsNative"
+        outputDirectory = file("$buildDir/executable")
     }
-    executableName = "FindWordsNative"
-    outputDirectory = file("$buildDir/executable")
 }
