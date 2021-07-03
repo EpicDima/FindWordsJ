@@ -18,6 +18,7 @@ public class ForkJoinSolver extends MultiThreadedSolver {
         super(linesSeparator, trie);
     }
 
+    @Override
     protected void ffff(List<WordAndMask> matchedWords) {
         List<Mask> masks = getRawMasks(matchedWords);
         int[] minXY = getMinXAndMinY(masks);

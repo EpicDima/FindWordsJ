@@ -26,7 +26,7 @@ public abstract class AbstractSolver implements Solver {
     protected char[][] matrix;
     protected Mask originalMask;
 
-    public AbstractSolver(String linesSeparator, WordTrie trie) {
+    protected AbstractSolver(String linesSeparator, WordTrie trie) {
         this.linesSeparator = linesSeparator;
         this.trie = trie;
     }
@@ -42,7 +42,7 @@ public abstract class AbstractSolver implements Solver {
         for (WordAndMask wordAndMask : words) {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    wordAndMask.mask.set(i, j, wordAndMask.mask.get(i, j) & !originalMask.get(i, j));
+                    wordAndMask.mask.set(i, j, wordAndMask.mask.get(i, j) && !originalMask.get(i, j));
                 }
             }
         }

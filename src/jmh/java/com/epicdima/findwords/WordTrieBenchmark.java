@@ -16,6 +16,10 @@ import java.util.concurrent.TimeUnit;
 @Measurement(iterations = 5, time = 5)
 @State(Scope.Benchmark)
 public class WordTrieBenchmark {
+    private static final String LONG_WORD = "привилегированность";
+    private static final String SHORT_WORD = "привет";
+    private static final String UNKNOWN_WORD = "яяяяяяя";
+
     @Param({
             "com.epicdima.findwords.trie.HashWordTrie",
             "com.epicdima.findwords.trie.ArrayWordTrie",
@@ -42,41 +46,41 @@ public class WordTrieBenchmark {
 
     @Benchmark
     public void insertLong() {
-        wordTrie.insert("привилегированность");
+        wordTrie.insert(LONG_WORD);
     }
 
     @Benchmark
     public void insertShort() {
-        wordTrie.insert("привет");
+        wordTrie.insert(SHORT_WORD);
     }
 
     @Benchmark
     public boolean containsWordLong() {
-        return wordTrie.containsWord("привилегированность");
+        return wordTrie.containsWord(LONG_WORD);
     }
 
     @Benchmark
     public boolean containsWordShort() {
-        return wordTrie.containsWord("привет");
+        return wordTrie.containsWord(SHORT_WORD);
     }
 
     @Benchmark
     public boolean notContainsWord() {
-        return wordTrie.containsWord("яяяяяяя");
+        return wordTrie.containsWord(UNKNOWN_WORD);
     }
 
     @Benchmark
     public boolean containsSubstringLong() {
-        return wordTrie.containsSubstring("привилегированность");
+        return wordTrie.containsSubstring(LONG_WORD);
     }
 
     @Benchmark
     public boolean containsSubstringShort() {
-        return wordTrie.containsSubstring("привет");
+        return wordTrie.containsSubstring(SHORT_WORD);
     }
 
     @Benchmark
     public boolean notContainsSubstring() {
-        return wordTrie.containsSubstring("яяяяяяя");
+        return wordTrie.containsSubstring(UNKNOWN_WORD);
     }
 }

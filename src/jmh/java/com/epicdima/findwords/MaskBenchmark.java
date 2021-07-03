@@ -29,6 +29,7 @@ public class MaskBenchmark {
     private int lastIndex;
     private MethodHandle constructor;
     private Mask mask;
+    private Mask mask2;
 
     @Setup
     public void setup() throws Throwable {
@@ -40,6 +41,9 @@ public class MaskBenchmark {
                         MethodType.methodType(void.class, int.class, int.class));
 
         mask = (Mask) constructor.invokeExact(size, size);
+
+        mask2 = mask2.copy();
+        mask2.set(lastIndex, lastIndex, true);
     }
 
     @Benchmark
@@ -105,5 +109,15 @@ public class MaskBenchmark {
     @Benchmark
     public Mask invert() {
         return mask.invert();
+    }
+
+    @Benchmark
+    public int hashCodeBenchmark() {
+        return mask.hashCode();
+    }
+
+    @Benchmark
+    public boolean equalsBenchmark() {
+        return mask.equals(mask2);
     }
 }

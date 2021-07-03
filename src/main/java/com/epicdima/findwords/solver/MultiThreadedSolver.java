@@ -44,6 +44,7 @@ public class MultiThreadedSolver extends FastSolver {
             try {
                 future.get();
             } catch (InterruptedException | ExecutionException e) {
+                Thread.currentThread().interrupt();
                 future.cancel(true);
             }
         }
@@ -63,19 +64,12 @@ public class MultiThreadedSolver extends FastSolver {
     }
 
     protected int[] getMinXAndMinY(List<Mask> masks) {
-        int[][] count = new int[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                for (Mask mask : masks) {
-                    if (mask.get(i, j)) {
-                        count[i][j]++;
-                    }
-                }
-            }
-        }
+        int[][] count = calculateMaskCountForEachCell(masks);
 
         int min = Integer.MAX_VALUE;
-        int minX = 0, minY = 0;
+        int minX = 0;
+        int minY = 0;
+
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (count[i][j] < min) {
@@ -87,5 +81,21 @@ public class MultiThreadedSolver extends FastSolver {
         }
 
         return new int[]{minX, minY};
+    }
+
+    private int[][] calculateMaskCountForEachCell(List<Mask> masks) {
+        int[][] count = new int[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                for (Mask mask : masks) {
+                    if (mask.get(i, j)) {
+                        count[i][j]++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 }

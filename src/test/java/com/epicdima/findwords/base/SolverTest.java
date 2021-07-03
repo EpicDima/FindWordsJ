@@ -28,7 +28,7 @@ public abstract class SolverTest {
 
     @Test
     public void test2() {
-        String text = Matrices.matrix8x8;
+        String text = Matrices.MATRIX_8_X_8;
 
         solver.solve(text, 4, 100, false);
 
@@ -49,7 +49,7 @@ public abstract class SolverTest {
 
     @Test
     public void test3() {
-        String text = Matrices.matrix8x8;
+        String text = Matrices.MATRIX_8_X_8;
 
         solver.solve(text, 4, 100, true);
 

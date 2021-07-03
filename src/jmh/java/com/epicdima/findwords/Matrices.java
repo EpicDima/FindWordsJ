@@ -1,7 +1,7 @@
 package com.epicdima.findwords;
 
 public final class Matrices {
-    public static final String matrix8x8 = "лгдосежб\n" +
+    public static final String MATRIX_8_X_8 = "лгдосежб\n" +
             "адимылуа\n" +
             "отаогдрр\n" +
             "рыртпода\n" +
@@ -10,7 +10,7 @@ public final class Matrices {
             "баорпутг\n" +
             "регакшак";
 
-    public static final String matrix10x10 = "креплкшкпо\n" +
+    public static final String MATRIX_10_X_10 = "креплкшкпо\n" +
             "дисдеамауд\n" +
             "авлтунифшк\n" +
             "нсобмка  а\n" +
@@ -21,7 +21,7 @@ public final class Matrices {
             "огратьовлр\n" +
             "боевваннаь";
 
-    public static final String matrix23x26 = "ьтсонбоптоасткич\n" +
+    public static final String MATRIX_23_X_26 = "ьтсонбоптоасткич\n" +
             "тблагоссобдмахан\n" +
             "аеиноспецанирува\n" +
             "моояспзиирисьоид\n" +
@@ -45,7 +45,7 @@ public final class Matrices {
             "ыйдизаканапияиод\n" +
             "ровватнилыпзацлз";
 
-    public static final String matrix19x4 = "ласт\n" +
+    public static final String MATRIX_19_X_4 = "ласт\n" +
             "ласа\n" +
             "ларь\n" +
             "лава\n" +
@@ -65,7 +65,7 @@ public final class Matrices {
             "алла\n" +
             "авар";
 
-    public static final String matrix11x8 = "говянаут\n" +
+    public static final String MATRIX_11_X_8 = "говянаут\n" +
             "закдиара\n" +
             "вхиурван\n" +
             "авчкнеин\n" +
