@@ -40,15 +40,15 @@ public class MaskBenchmark {
                 .findConstructor(Class.forName(maskClass),
                         MethodType.methodType(void.class, int.class, int.class));
 
-        mask = (Mask) constructor.invokeExact(size, size);
+        mask = (Mask) constructor.invoke(size, size);
 
-        mask2 = mask2.copy();
+        mask2 = mask.copy();
         mask2.set(lastIndex, lastIndex, true);
     }
 
     @Benchmark
     public Object init() throws Throwable {
-        return constructor.invokeExact(size, size);
+        return constructor.invoke(size, size);
     }
 
     @Benchmark

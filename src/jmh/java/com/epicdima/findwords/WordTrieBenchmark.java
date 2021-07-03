@@ -35,13 +35,13 @@ public class WordTrieBenchmark {
                 .findStatic(Class.forName(wordTrieClass), "createInstance",
                         MethodType.methodType(WordTrie.class, String.class));
 
-        wordTrie = (WordTrie) createInstanceMethod.invokeExact(Utils.DEFAULT_DICTIONARY);
+        wordTrie = (WordTrie) createInstanceMethod.invoke(Utils.DEFAULT_DICTIONARY);
     }
 
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     @Benchmark
     public Object init() throws Throwable {
-        return createInstanceMethod.invokeExact(Utils.DEFAULT_DICTIONARY);
+        return createInstanceMethod.invoke(Utils.DEFAULT_DICTIONARY);
     }
 
     @Benchmark

@@ -41,12 +41,12 @@ public class SolverBenchmark {
         WordTrie wordTrie = (WordTrie) MethodHandles.publicLookup()
                 .findStatic(Class.forName(wordTrieClass), "createInstance",
                         MethodType.methodType(WordTrie.class, String.class))
-                .invokeExact(Utils.DEFAULT_DICTIONARY);
+                .invoke(Utils.DEFAULT_DICTIONARY);
 
         solver = (Solver) MethodHandles.publicLookup()
                 .findConstructor(Class.forName(solverClass),
                         MethodType.methodType(void.class, String.class, WordTrie.class))
-                .invokeExact(LINES_SEPARATOR, wordTrie);
+                .invoke(LINES_SEPARATOR, wordTrie);
     }
 
     @Benchmark
