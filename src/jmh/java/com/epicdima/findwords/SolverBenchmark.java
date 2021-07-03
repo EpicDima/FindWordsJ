@@ -2,196 +2,85 @@ package com.epicdima.findwords;
 
 import com.epicdima.findwords.base.Solver;
 import com.epicdima.findwords.base.WordTrie;
-import com.epicdima.findwords.solver.DefaultSolver;
-import com.epicdima.findwords.solver.FastSolver;
-import com.epicdima.findwords.solver.ForkJoinSolver;
-import com.epicdima.findwords.solver.MultiThreadedSolver;
-import com.epicdima.findwords.trie.ArrayWordTrie;
-import com.epicdima.findwords.trie.HashWordTrie;
-import com.epicdima.findwords.utils.Matrices;
 import com.epicdima.findwords.utils.Utils;
 import org.openjdk.jmh.annotations.*;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.concurrent.TimeUnit;
+
+import static com.epicdima.findwords.Matrices.*;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 2)
-@Measurement(iterations = 5)
+@Warmup(iterations = 2, time = 10)
+@Measurement(iterations = 5, time = 10)
 @State(Scope.Benchmark)
 public class SolverBenchmark {
     private static final String LINES_SEPARATOR = "\n";
 
-    private final WordTrie hashWordTrie = HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY);
-    private final WordTrie arrayWordTrie = ArrayWordTrie.createInstance(Utils.DEFAULT_DICTIONARY);
+    @Param({
+            "com.epicdima.findwords.trie.HashWordTrie",
+            "com.epicdima.findwords.trie.ArrayWordTrie",
+    })
+    public String wordTrieClass;
 
-    private final Solver defaultSolverHash = new DefaultSolver(LINES_SEPARATOR, hashWordTrie);
-    private final Solver defaultSolverArray = new DefaultSolver(LINES_SEPARATOR, arrayWordTrie);
-    private final Solver fastSolverHash = new FastSolver(LINES_SEPARATOR, hashWordTrie);
-    private final Solver fastSolverArray = new FastSolver(LINES_SEPARATOR, arrayWordTrie);
-    private final Solver multiThreadedSolverHash = new MultiThreadedSolver(LINES_SEPARATOR, hashWordTrie);
-    private final Solver multiThreadedSolverArray = new MultiThreadedSolver(LINES_SEPARATOR, arrayWordTrie);
-    private final Solver forkJoinSolverHash = new ForkJoinSolver(LINES_SEPARATOR, hashWordTrie);
-    private final Solver forkJoinSolverArray = new ForkJoinSolver(LINES_SEPARATOR, arrayWordTrie);
+    @Param({
+            "com.epicdima.findwords.solver.DefaultSolver",
+            "com.epicdima.findwords.solver.FastSolver",
+            "com.epicdima.findwords.solver.MultiThreadedSolver",
+            "com.epicdima.findwords.solver.ForkJoinSolver",
+    })
+    public String solverClass;
 
-    @Benchmark
-    public void defaultSolverHash_false_1() {
-        defaultSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    private Solver solver;
+
+    @Setup
+    public void setup() throws Throwable {
+        WordTrie wordTrie = (WordTrie) MethodHandles.publicLookup()
+                .findStatic(Class.forName(wordTrieClass), "createInstance",
+                        MethodType.methodType(WordTrie.class, String.class))
+                .invokeExact(Utils.DEFAULT_DICTIONARY);
+
+        solver = (Solver) MethodHandles.publicLookup()
+                .findConstructor(Class.forName(solverClass),
+                        MethodType.methodType(void.class, String.class, WordTrie.class))
+                .invokeExact(LINES_SEPARATOR, wordTrie);
     }
 
     @Benchmark
-    public void defaultSolverArray_false_1() {
-        defaultSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    public void matrix8x8_1_100() {
+        solver.solve(matrix8x8, 1, 100, false);
     }
 
     @Benchmark
-    public void fastSolverHash_false_1() {
-        fastSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    public void matrix10x10_1_100() {
+        solver.solve(matrix10x10, 1, 100, false);
     }
 
     @Benchmark
-    public void fastSolverArray_false_1() {
-        fastSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    public void matrix23x26_1_100() {
+        solver.solve(matrix23x26, 1, 100, false);
     }
 
     @Benchmark
-    public void multiThreadedSolverHash_false_1() {
-        multiThreadedSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    public void matrix19x4_1_100() {
+        solver.solve(matrix19x4, 1, 100, false);
     }
 
     @Benchmark
-    public void multiThreadedSolverArray_false_1() {
-        multiThreadedSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    public void matrix11x8_1_100() {
+        solver.solve(matrix11x8, 1, 100, false);
     }
 
     @Benchmark
-    public void forkJoinSolverHash_false_1() {
-        forkJoinSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
+    public void matrix8x8_4_100_fullMatch() {
+        solver.solve(matrix8x8, 4, 100, true);
     }
 
     @Benchmark
-    public void forkJoinSolverArray_false_1() {
-        forkJoinSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 1, 100, false);
-    }
-
-    @Benchmark
-    public void defaultSolverHash_false_2() {
-        defaultSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void defaultSolverArray_false_2() {
-        defaultSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void fastSolverHash_false_2() {
-        fastSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void fastSolverArray_false_2() {
-        fastSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void multiThreadedSolverHash_false_2() {
-        multiThreadedSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void multiThreadedSolverArray_false_2() {
-        multiThreadedSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void forkJoinSolverHash_false_2() {
-        forkJoinSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void forkJoinSolverArray_false_2() {
-        forkJoinSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix23x26, 1, 100, false);
-    }
-
-    @Benchmark
-    public void defaultSolverHash_true_1() {
-        defaultSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void defaultSolverArray_true_1() {
-        defaultSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void fastSolverHash_true_1() {
-        fastSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void fastSolverArray_true_1() {
-        fastSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void multiThreadedSolverHash_true_1() {
-        multiThreadedSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void multiThreadedSolverArray_true_1() {
-        multiThreadedSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void forkJoinSolverHash_true_1() {
-        forkJoinSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void forkJoinSolverArray_true_1() {
-        forkJoinSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix8x8, 4, 100, true);
-    }
-
-    @Benchmark
-    public void defaultSolverHash_true_2() {
-        defaultSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void defaultSolverArray_true_2() {
-        defaultSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void fastSolverHash_true_2() {
-        fastSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void fastSolverArray_true_2() {
-        fastSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void multiThreadedSolverHash_true_2() {
-        multiThreadedSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void multiThreadedSolverArray_true_2() {
-        multiThreadedSolverArray.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void forkJoinSolverHash_true_2() {
-        forkJoinSolverHash.solve(com.epicdima.findwords.utils.Matrices.matrix11x8, 5, 100, true);
-    }
-
-    @Benchmark
-    public void forkJoinSolverArray_true_2() {
-        forkJoinSolverArray.solve(Matrices.matrix11x8, 5, 100, true);
+    public void matrix11x8_5_100_fullMatch() {
+        solver.solve(matrix11x8, 5, 100, true);
     }
 }

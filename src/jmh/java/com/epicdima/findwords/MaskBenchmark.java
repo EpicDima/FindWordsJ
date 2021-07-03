@@ -1,152 +1,109 @@
 package com.epicdima.findwords;
 
 import com.epicdima.findwords.base.Mask;
-import com.epicdima.findwords.mask.BitSetMask;
-import com.epicdima.findwords.mask.BooleanMask;
 import org.openjdk.jmh.annotations.*;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 1, time = 5)
-@Measurement(iterations = 3, time = 5)
+@Warmup(iterations = 2, time = 5)
+@Measurement(iterations = 5, time = 5)
 @State(Scope.Benchmark)
 public class MaskBenchmark {
-    @Param({"2", "4", "8", "16", "32", "64", "128"})
+    @Param({"2", "4", "8", "16", "32", "64", "128", "256"})
     public int size;
 
-    private final Mask booleanMask = new BooleanMask(size, size);
-    private final Mask bitSetMask = new BitSetMask(size, size);
+    @Param({
+            "com.epicdima.findwords.mask.BooleanMask",
+            "com.epicdima.findwords.mask.BitSetMask",
+            "com.epicdima.findwords.mask.FlatBooleanMask",
+    })
+    public String maskClass;
 
-    @Benchmark
-    public Mask initBoolean() {
-        return new BooleanMask(size, size);
+    private int middleIndex;
+    private int lastIndex;
+    private MethodHandle constructor;
+    private Mask mask;
+
+    @Setup
+    public void setup() throws Throwable {
+        middleIndex = size / 2;
+        lastIndex = size - 1;
+
+        constructor = MethodHandles.publicLookup()
+                .findConstructor(Class.forName(maskClass),
+                        MethodType.methodType(void.class, int.class, int.class));
+
+        mask = (Mask) constructor.invokeExact(size, size);
     }
 
     @Benchmark
-    public Mask initBitSet() {
-        return new BitSetMask(size, size);
+    public Object init() throws Throwable {
+        return constructor.invokeExact(size, size);
     }
 
     @Benchmark
-    public boolean getFirstBoolean() {
-        return booleanMask.get(0, 0);
+    public boolean getFirst() {
+        return mask.get(0, 0);
     }
 
     @Benchmark
-    public boolean getFirstBitSet() {
-        return bitSetMask.get(0, 0);
+    public boolean getMiddle() {
+        return mask.get(middleIndex, middleIndex);
     }
 
     @Benchmark
-    public boolean getLastBoolean() {
-        return booleanMask.get(size - 1, size - 1);
+    public boolean getLast() {
+        return mask.get(lastIndex, lastIndex);
     }
 
     @Benchmark
-    public boolean getLastBitSet() {
-        return bitSetMask.get(size - 1, size - 1);
+    public void setFirst() {
+        mask.set(0, 0, true);
     }
 
     @Benchmark
-    public boolean getMiddleBoolean() {
-        return booleanMask.get(size / 2, size / 2);
+    public void setMiddle() {
+        mask.set(middleIndex, middleIndex, true);
     }
 
     @Benchmark
-    public boolean getMiddleBitSet() {
-        return bitSetMask.get(size / 2, size / 2);
+    public void setLast() {
+        mask.set(lastIndex, lastIndex, true);
     }
 
     @Benchmark
-    public void setFirstBoolean() {
-        booleanMask.set(0, 0, true);
+    public Mask copy() {
+        return mask.copy();
     }
 
     @Benchmark
-    public void setFirstBitSet() {
-        bitSetMask.set(0, 0, true);
+    public boolean isAllTrue() {
+        return mask.isAllTrue();
     }
 
     @Benchmark
-    public void setLastBoolean() {
-        booleanMask.set(size - 1, size - 1, true);
+    public boolean isAllFalse() {
+        return mask.isAllFalse();
     }
 
     @Benchmark
-    public void setLastBitSet() {
-        bitSetMask.set(size - 1, size - 1, true);
+    public Mask and() {
+        return mask.and(mask);
     }
 
     @Benchmark
-    public void setMiddleBoolean() {
-        booleanMask.set(size / 2, size / 2, true);
+    public Mask or() {
+        return mask.or(mask);
     }
 
     @Benchmark
-    public void setMiddleBitSet() {
-        bitSetMask.set(size / 2, size / 2, true);
-    }
-
-    @Benchmark
-    public Mask copyBoolean() {
-        return booleanMask.copy();
-    }
-
-    @Benchmark
-    public Mask copyBitSet() {
-        return bitSetMask.copy();
-    }
-
-    @Benchmark
-    public boolean isAllTrueBoolean() {
-        return booleanMask.isAllTrue();
-    }
-
-    @Benchmark
-    public boolean isAllTrueBitSet() {
-        return bitSetMask.isAllTrue();
-    }
-
-    @Benchmark
-    public boolean isAllFalseBoolean() {
-        return booleanMask.isAllFalse();
-    }
-
-    @Benchmark
-    public boolean isAllFalseBitSet() {
-        return bitSetMask.isAllFalse();
-    }
-
-    @Benchmark
-    public Mask andBoolean() {
-        return booleanMask.and(booleanMask);
-    }
-
-    @Benchmark
-    public Mask andBitSet() {
-        return bitSetMask.and(bitSetMask);
-    }
-
-    @Benchmark
-    public Mask orBoolean() {
-        return booleanMask.or(booleanMask);
-    }
-
-    @Benchmark
-    public Mask orBitSet() {
-        return bitSetMask.or(bitSetMask);
-    }
-
-    @Benchmark
-    public Mask invertBoolean() {
-        return booleanMask.invert();
-    }
-
-    @Benchmark
-    public Mask invertBitSet() {
-        return bitSetMask.invert();
+    public Mask invert() {
+        return mask.invert();
     }
 }

@@ -1,62 +1,82 @@
 package com.epicdima.findwords;
 
 import com.epicdima.findwords.base.WordTrie;
-import com.epicdima.findwords.trie.ArrayWordTrie;
-import com.epicdima.findwords.trie.HashWordTrie;
 import com.epicdima.findwords.utils.Utils;
 import org.openjdk.jmh.annotations.*;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 1, time = 5)
-@Measurement(iterations = 3, time = 5)
+@Warmup(iterations = 2, time = 5)
+@Measurement(iterations = 5, time = 5)
 @State(Scope.Benchmark)
 public class WordTrieBenchmark {
-    private final WordTrie hashWordTrie = HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY);
-    private final WordTrie arrayWordTrie = ArrayWordTrie.createInstance(Utils.DEFAULT_DICTIONARY);
+    @Param({
+            "com.epicdima.findwords.trie.HashWordTrie",
+            "com.epicdima.findwords.trie.ArrayWordTrie",
+    })
+    public String wordTrieClass;
 
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    @Benchmark
-    public WordTrie initHash() {
-        return HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY);
+    private MethodHandle createInstanceMethod;
+    private WordTrie wordTrie;
+
+    @Setup
+    public void setup() throws Throwable {
+        createInstanceMethod = MethodHandles.publicLookup()
+                .findStatic(Class.forName(wordTrieClass), "createInstance",
+                        MethodType.methodType(WordTrie.class, String.class));
+
+        wordTrie = (WordTrie) createInstanceMethod.invokeExact(Utils.DEFAULT_DICTIONARY);
     }
 
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     @Benchmark
-    public WordTrie initArray() {
-        return ArrayWordTrie.createInstance(Utils.DEFAULT_DICTIONARY);
+    public Object init() throws Throwable {
+        return createInstanceMethod.invokeExact(Utils.DEFAULT_DICTIONARY);
     }
 
     @Benchmark
-    public void insertHash() {
-        hashWordTrie.insert("привилегированность");
+    public void insertLong() {
+        wordTrie.insert("привилегированность");
     }
 
     @Benchmark
-    public void insertArray() {
-        arrayWordTrie.insert("привилегированность");
+    public void insertShort() {
+        wordTrie.insert("привет");
     }
 
     @Benchmark
-    public boolean containsWordHash() {
-        return hashWordTrie.containsWord("привилегированность");
+    public boolean containsWordLong() {
+        return wordTrie.containsWord("привилегированность");
     }
 
     @Benchmark
-    public boolean containsWordArray() {
-        return arrayWordTrie.containsWord("привилегированность");
+    public boolean containsWordShort() {
+        return wordTrie.containsWord("привет");
     }
 
     @Benchmark
-    public boolean containsSubstringHash() {
-        return hashWordTrie.containsSubstring("привилегированность");
+    public boolean notContainsWord() {
+        return wordTrie.containsWord("яяяяяяя");
     }
 
     @Benchmark
-    public boolean containsSubstringArray() {
-        return arrayWordTrie.containsSubstring("привилегированность");
+    public boolean containsSubstringLong() {
+        return wordTrie.containsSubstring("привилегированность");
+    }
+
+    @Benchmark
+    public boolean containsSubstringShort() {
+        return wordTrie.containsSubstring("привет");
+    }
+
+    @Benchmark
+    public boolean notContainsSubstring() {
+        return wordTrie.containsSubstring("яяяяяяя");
     }
 }

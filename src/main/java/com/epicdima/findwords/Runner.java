@@ -253,7 +253,8 @@ public class Runner {
                 throw new IllegalArgumentException("The minimum word length must be less than or equal to the maximum");
             }
 
-            if (text.isBlank()) {
+            text = text.trim();
+            if (text.isEmpty()) {
                 throw new IllegalArgumentException("The text should not be empty");
             }
 
