@@ -127,8 +127,6 @@ public class BooleanMask implements Mask {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(rows, cols);
-        result = 31 * result + Arrays.deepHashCode(matrix);
-        return result;
+        return Arrays.deepHashCode(matrix);
     }
 }

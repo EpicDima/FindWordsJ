@@ -3,10 +3,10 @@ package com.epicdima.findwords.base;
 import java.util.Objects;
 
 public final class WordAndMask {
-    public final CharSequence word;
+    public final String word;
     public final Mask mask;
 
-    public WordAndMask(CharSequence word, Mask mask) {
+    public WordAndMask(String word, Mask mask) {
         this.word = word;
         this.mask = mask;
     }

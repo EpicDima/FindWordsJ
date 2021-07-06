@@ -46,12 +46,12 @@ public class ArrayWordTrie implements WordTrie {
             throw new RuntimeException(e);
         }
 
-        ArrayWordTrie trie = new ArrayWordTrie(abc.size());
+        WordTrie wordTrie = new ArrayWordTrie(abc.size());
         for (String word : words) {
-            trie.insert(word);
+            wordTrie.insert(word);
         }
 
-        return trie;
+        return wordTrie;
     }
 
     @Override

@@ -1,15 +1,29 @@
 package com.epicdima.findwords.base;
 
+import com.epicdima.findwords.utils.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class TrieTest {
+    protected final String dictionaryPath = Utils.DEFAULT_DICTIONARY;
 
     protected abstract WordTrie createWordTrie();
 
-    protected abstract List<String> readDictionary();
+    protected List<String> readDictionary() {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictionaryPath), StandardCharsets.UTF_8))) {
+            return reader.lines().collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     void containsSubstring() {
@@ -32,7 +46,7 @@ public abstract class TrieTest {
         List<String> words = readDictionary();
 
         for (String word : words) {
-            for (int i = 2; i <= word.length(); i++) {
+            for (int i = 1; i < word.length(); i++) {
                 Assertions.assertTrue(trie.containsSubstring(word.substring(0, i)));
                 Assertions.assertFalse(trie.containsSubstring(word + word + word)); // на двух ошибка
                 Assertions.assertFalse(trie.containsSubstring(word + word + word + word));

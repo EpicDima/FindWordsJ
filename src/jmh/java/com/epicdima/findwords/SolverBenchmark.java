@@ -23,6 +23,7 @@ public class SolverBenchmark {
     @Param({
             "com.epicdima.findwords.trie.HashWordTrie",
             "com.epicdima.findwords.trie.ArrayWordTrie",
+            "com.epicdima.findwords.trie.SetWordTrie",
     })
     public String wordTrieClass;
 

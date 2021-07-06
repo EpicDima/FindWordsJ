@@ -69,7 +69,7 @@ public class Runner {
         System.out.println("Found words:");
         System.out.println(solver.getWords()
                 .stream()
-                .map(wordAndMask -> wordAndMask.word.toString())
+                .map(wordAndMask -> wordAndMask.word)
                 .collect(Collectors.joining(System.lineSeparator())));
 
         List<List<WordAndMask>> fullMatches = solver.getFullMatches();
@@ -81,7 +81,7 @@ public class Runner {
                     .stream()
                     .map(array -> array
                             .stream()
-                            .map(wordAndMask -> wordAndMask.word.toString())
+                            .map(wordAndMask -> wordAndMask.word)
                             .collect(Collectors.joining(" ")))
                     .collect(Collectors.joining(System.lineSeparator())));
         }

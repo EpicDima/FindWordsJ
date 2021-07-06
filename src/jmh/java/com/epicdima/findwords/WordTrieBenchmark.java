@@ -18,11 +18,12 @@ import java.util.concurrent.TimeUnit;
 public class WordTrieBenchmark {
     private static final String LONG_WORD = "привилегированность";
     private static final String SHORT_WORD = "привет";
-    private static final String UNKNOWN_WORD = "яяяяяяя";
+    private static final String UNKNOWN_WORD = "яяяяяяяяя";
 
     @Param({
             "com.epicdima.findwords.trie.HashWordTrie",
             "com.epicdima.findwords.trie.ArrayWordTrie",
+            "com.epicdima.findwords.trie.SetWordTrie",
     })
     public String wordTrieClass;
 

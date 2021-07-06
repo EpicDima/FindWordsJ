@@ -2,13 +2,13 @@ package com.epicdima.findwords.solver;
 
 import com.epicdima.findwords.base.Solver;
 import com.epicdima.findwords.base.SolverTest;
-import com.epicdima.findwords.trie.HashWordTrie;
-import com.epicdima.findwords.utils.Utils;
+import com.epicdima.findwords.type.SolverType;
+import com.epicdima.findwords.type.WordTrieType;
 
 public class ForkJoinSolverTest extends SolverTest {
 
     @Override
     protected Solver createSolver() {
-        return new ForkJoinSolver(linesSeparator, HashWordTrie.createInstance(Utils.DEFAULT_DICTIONARY));
+        return SolverType.FORKJOIN.createInstance(linesSeparator, WordTrieType.HASH.createInstance(dictionaryPath));
     }
 }

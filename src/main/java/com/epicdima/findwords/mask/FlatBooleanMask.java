@@ -3,22 +3,27 @@ package com.epicdima.findwords.mask;
 import com.epicdima.findwords.base.Mask;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class FlatBooleanMask implements Mask {
     private final int rows;
     private final int cols;
+    private final int size;
 
     private final boolean[] flatMatrix;
 
-    private FlatBooleanMask(int rows, int cols, boolean[] flatMatrix) {
+    private FlatBooleanMask(int rows, int cols, int size, boolean[] flatMatrix) {
         this.rows = rows;
         this.cols = cols;
+        this.size = size;
         this.flatMatrix = flatMatrix;
     }
 
+    private FlatBooleanMask(int rows, int cols, int size) {
+        this(rows, cols, size, new boolean[size]);
+    }
+
     public FlatBooleanMask(int rows, int cols) {
-        this(rows, cols, new boolean[rows * cols]);
+        this(rows, cols, rows * cols);
     }
 
     @Override
@@ -33,13 +38,13 @@ public class FlatBooleanMask implements Mask {
 
     @Override
     public Mask copy() {
-        return new FlatBooleanMask(rows, cols, Arrays.copyOf(flatMatrix, flatMatrix.length));
+        return new FlatBooleanMask(rows, cols, size, Arrays.copyOf(flatMatrix, size));
     }
 
     @Override
     public boolean isAllTrue() {
-        for (boolean value : flatMatrix) {
-            if (!value) {
+        for (int i = 0; i < size; i++) {
+            if (!flatMatrix[i]) {
                 return false;
             }
         }
@@ -49,8 +54,8 @@ public class FlatBooleanMask implements Mask {
 
     @Override
     public boolean isAllFalse() {
-        for (boolean value : flatMatrix) {
-            if (value) {
+        for (int i = 0; i < size; i++) {
+            if (flatMatrix[i]) {
                 return false;
             }
         }
@@ -60,10 +65,8 @@ public class FlatBooleanMask implements Mask {
 
     @Override
     public Mask and(Mask another) {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                flatMatrix[i * cols + j] &= another.get(i, j);
-            }
+        for (int i = 0; i < size; i++) {
+            flatMatrix[i] &= ((FlatBooleanMask) another).flatMatrix[i];
         }
 
         return this;
@@ -71,10 +74,8 @@ public class FlatBooleanMask implements Mask {
 
     @Override
     public Mask or(Mask another) {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                flatMatrix[i * cols + j] |= another.get(i, j);
-            }
+        for (int i = 0; i < size; i++) {
+            flatMatrix[i] |= ((FlatBooleanMask) another).flatMatrix[i];
         }
 
         return this;
@@ -82,7 +83,7 @@ public class FlatBooleanMask implements Mask {
 
     @Override
     public Mask invert() {
-        for (int i = 0; i < rows * cols; i++) {
+        for (int i = 0; i < size; i++) {
             flatMatrix[i] = !flatMatrix[i];
         }
 
@@ -91,11 +92,9 @@ public class FlatBooleanMask implements Mask {
 
     @Override
     public boolean notIntersects(Mask another) {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (flatMatrix[i * cols + j] && another.get(i, j)) {
-                    return false;
-                }
+        for (int i = 0; i < size; i++) {
+            if (flatMatrix[i] && ((FlatBooleanMask) another).flatMatrix[i]) {
+                return false;
             }
         }
 
@@ -107,13 +106,11 @@ public class FlatBooleanMask implements Mask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FlatBooleanMask that = (FlatBooleanMask) o;
-        return rows == that.rows && cols == that.cols && Arrays.equals(flatMatrix, that.flatMatrix);
+        return rows == that.rows && cols == that.cols && size == that.size && Arrays.equals(flatMatrix, that.flatMatrix);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(rows, cols);
-        result = 31 * result + Arrays.hashCode(flatMatrix);
-        return result;
+        return Arrays.hashCode(flatMatrix);
     }
 }

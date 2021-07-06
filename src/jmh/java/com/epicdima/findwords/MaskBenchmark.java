@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Measurement(iterations = 5, time = 5)
 @State(Scope.Benchmark)
 public class MaskBenchmark {
-    @Param({"2", "4", "8", "16", "32", "64", "128", "256"})
+    @Param({"8", "128"})
     public int size;
 
     @Param({

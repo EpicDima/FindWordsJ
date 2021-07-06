@@ -3,22 +3,27 @@ package com.epicdima.findwords.mask;
 import com.epicdima.findwords.base.Mask;
 
 import java.util.BitSet;
-import java.util.Objects;
 
 public class BitSetMask implements Mask {
     private final int rows;
     private final int cols;
+    private final int size;
 
     private final BitSet bitSet;
 
-    private BitSetMask(int rows, int cols, BitSet bitSet) {
+    private BitSetMask(int rows, int cols, int size, BitSet bitSet) {
         this.rows = rows;
         this.cols = cols;
+        this.size = size;
         this.bitSet = bitSet;
     }
 
+    private BitSetMask(int rows, int cols, int size) {
+        this(rows, cols, size, new BitSet(size));
+    }
+
     public BitSetMask(int rows, int cols) {
-        this(rows, cols, new BitSet(rows * cols));
+        this(rows, cols, rows * cols);
     }
 
     @Override
@@ -33,12 +38,12 @@ public class BitSetMask implements Mask {
 
     @Override
     public Mask copy() {
-        return new BitSetMask(rows, cols, (BitSet) bitSet.clone());
+        return new BitSetMask(rows, cols, size, (BitSet) bitSet.clone());
     }
 
     @Override
     public boolean isAllTrue() {
-        return bitSet.cardinality() == rows * cols;
+        return bitSet.cardinality() == size;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class BitSetMask implements Mask {
 
     @Override
     public Mask invert() {
-        bitSet.flip(0, rows * cols);
+        bitSet.flip(0, size);
         return this;
     }
 
@@ -74,13 +79,11 @@ public class BitSetMask implements Mask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BitSetMask that = (BitSetMask) o;
-        return rows == that.rows && cols == that.cols && bitSet.equals(that.bitSet);
+        return rows == that.rows && cols == that.cols && size == that.size && bitSet.equals(that.bitSet);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(rows, cols);
-        result = 31 * result + bitSet.hashCode();
-        return result;
+        return bitSet.hashCode();
     }
 }

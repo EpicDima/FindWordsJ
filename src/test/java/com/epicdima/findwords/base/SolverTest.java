@@ -1,6 +1,7 @@
 package com.epicdima.findwords.base;
 
 import com.epicdima.findwords.utils.Matrices;
+import com.epicdima.findwords.utils.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class SolverTest {
+    protected final String dictionaryPath = Utils.DEFAULT_DICTIONARY;
     protected final String linesSeparator = "\n";
 
     private final Solver solver = createSolver();
