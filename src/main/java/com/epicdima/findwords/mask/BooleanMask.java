@@ -3,7 +3,6 @@ package com.epicdima.findwords.mask;
 import com.epicdima.findwords.base.Mask;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class BooleanMask implements Mask {
     private final int rows;

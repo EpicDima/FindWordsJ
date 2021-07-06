@@ -98,17 +98,22 @@ public class MaskBenchmark {
 
     @Benchmark
     public Mask and() {
-        return mask.and(mask);
+        return mask.and(mask2);
     }
 
     @Benchmark
     public Mask or() {
-        return mask.or(mask);
+        return mask.or(mask2);
     }
 
     @Benchmark
     public Mask invert() {
         return mask.invert();
+    }
+
+    @Benchmark
+    public boolean notIntersects() {
+        return mask.notIntersects(mask2);
     }
 
     @Benchmark

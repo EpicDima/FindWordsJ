@@ -3,8 +3,8 @@ package com.epicdima.findwords.type;
 import com.epicdima.findwords.base.WordTrie;
 import com.epicdima.findwords.base.WordTrieInstantiator;
 import com.epicdima.findwords.trie.ArrayWordTrie;
-import com.epicdima.findwords.trie.SetWordTrie;
 import com.epicdima.findwords.trie.HashWordTrie;
+import com.epicdima.findwords.trie.SetWordTrie;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;

@@ -5,12 +5,6 @@ import java.nio.charset.StandardCharsets;
 
 public interface WordTrie {
 
-    void insert(final String word);
-
-    boolean containsSubstring(final String substring);
-
-    boolean containsWord(final String word);
-
     static void fill(WordTrie wordTrie, String dictionaryPath) {
         try {
             fill(wordTrie, new FileInputStream(dictionaryPath));
@@ -29,4 +23,10 @@ public interface WordTrie {
             throw new RuntimeException(e);
         }
     }
+
+    void insert(final String word);
+
+    boolean containsSubstring(final String substring);
+
+    boolean containsWord(final String word);
 }
