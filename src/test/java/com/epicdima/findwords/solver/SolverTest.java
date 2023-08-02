@@ -1,12 +1,11 @@
-package com.epicdima.findwords.base;
+package com.epicdima.findwords.solver;
 
 import com.epicdima.findwords.utils.Matrices;
 import com.epicdima.findwords.utils.Utils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public abstract class SolverTest {
     protected final String dictionaryPath = Utils.DEFAULT_DICTIONARY;
@@ -22,7 +21,7 @@ public abstract class SolverTest {
 
         solver.solve(text, 1, 10, false);
 
-        List<CharSequence> words = solver.getWords().stream().map(wordAndMask -> wordAndMask.word).collect(Collectors.toList());
+        List<CharSequence> words = solver.getWords().stream().map(WordAndMask::word).collect(Collectors.toList());
 
         Assertions.assertTrue(words.contains("привет"));
         Assertions.assertTrue(words.contains("дуб"));
@@ -38,7 +37,7 @@ public abstract class SolverTest {
 
         List<CharSequence> words = solver.getWords()
                 .stream()
-                .map(wordAndMask -> wordAndMask.word)
+                .map(WordAndMask::word)
                 .sorted()
                 .collect(Collectors.toList());
 
@@ -64,7 +63,7 @@ public abstract class SolverTest {
                 .stream()
                 .map(fullMatch -> fullMatch
                         .stream()
-                        .map(wordAndMask -> wordAndMask.word)
+                        .map(WordAndMask::word)
                         .sorted()
                         .collect(Collectors.joining(" ")))
                 .sorted()

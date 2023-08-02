@@ -1,7 +1,5 @@
 package com.epicdima.findwords.mask;
 
-import com.epicdima.findwords.base.Mask;
-
 import java.util.BitSet;
 
 public class BitSetMask implements Mask {
@@ -60,6 +58,12 @@ public class BitSetMask implements Mask {
     @Override
     public Mask or(Mask another) {
         bitSet.or(((BitSetMask) another).bitSet);
+        return this;
+    }
+
+    @Override
+    public Mask xor(Mask another) {
+        bitSet.xor(((BitSetMask) another).bitSet);
         return this;
     }
 

@@ -1,9 +1,7 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.base.Mask;
-import com.epicdima.findwords.base.WordAndMask;
-import com.epicdima.findwords.base.WordTrie;
-
+import com.epicdima.findwords.mask.Mask;
+import com.epicdima.findwords.trie.WordTrie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,18 +18,17 @@ public class ForkJoinSolver extends MultiThreadedSolver {
 
     @Override
     protected void ffff(List<WordAndMask> matchedWords) {
-        List<Mask> masks = getRawMasks(matchedWords);
+        Mask[] masks = getRawMasks(matchedWords);
         int[] minXY = getMinXAndMinY(masks);
 
-        List<ForkJoinTask<Void>> tasks = new ArrayList<>();
+        List<ForkJoinTask<Void>> tasks = new ArrayList<>(masks.length);
 
-        int length = masks.size();
-        for (int i = 0; i < length; i++) {
-            if (masks.get(i).get(minXY[0], minXY[1])) {
-                boolean[] indexes = new boolean[length];
+        for (int i = 0; i < masks.length; i++) {
+            if (masks[i].get(minXY[0], minXY[1])) {
+                boolean[] indexes = new boolean[masks.length];
                 indexes[i] = true;
                 tasks.add(forkJoinPool.submit(new F2Action(
-                        masks.get(i).copy().or(originalMask),
+                        masks[i].copy().or(originalMask),
                         indexes,
                         0,
                         masks)
@@ -49,9 +46,9 @@ public class ForkJoinSolver extends MultiThreadedSolver {
         private final Mask mask;
         private final boolean[] indexes;
         private final int start;
-        private final List<Mask> masks;
+        private final Mask[] masks;
 
-        public F2Action(Mask mask, boolean[] indexes, int start, List<Mask> masks) {
+        public F2Action(Mask mask, boolean[] indexes, int start, Mask[] masks) {
             this.mask = mask;
             this.indexes = indexes;
             this.start = start;
@@ -65,13 +62,13 @@ public class ForkJoinSolver extends MultiThreadedSolver {
                 return;
             }
 
-            List<ForkJoinTask<Void>> tasks = new ArrayList<>();
+            List<ForkJoinTask<Void>> tasks = new ArrayList<>(indexes.length);
 
             for (int i = start; i < indexes.length; i++) {
-                if (mask.notIntersects(masks.get(i))) {
+                if (mask.notIntersects(masks[i])) {
                     boolean[] indexesCopy = Arrays.copyOf(indexes, indexes.length);
                     indexesCopy[i] = true;
-                    tasks.add(new F2Action(mask.copy().or(masks.get(i)), indexesCopy, i, masks).fork());
+                    tasks.add(new F2Action(mask.copy().or(masks[i]), indexesCopy, i, masks).fork());
                 }
             }
 

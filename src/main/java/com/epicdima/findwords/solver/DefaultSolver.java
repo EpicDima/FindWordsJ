@@ -1,8 +1,8 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.base.Mask;
-import com.epicdima.findwords.base.WordTrie;
 import com.epicdima.findwords.mask.BooleanMask;
+import com.epicdima.findwords.mask.Mask;
+import com.epicdima.findwords.trie.WordTrie;
 
 public class DefaultSolver extends AbstractSolver {
 

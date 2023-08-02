@@ -1,4 +1,4 @@
-package com.epicdima.findwords.base;
+package com.epicdima.findwords.mask;
 
 public interface Mask {
 
@@ -15,6 +15,8 @@ public interface Mask {
     Mask and(Mask another);
 
     Mask or(Mask another);
+
+    Mask xor(Mask another);
 
     Mask invert();
 

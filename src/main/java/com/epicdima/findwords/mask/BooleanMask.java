@@ -1,7 +1,5 @@
 package com.epicdima.findwords.mask;
 
-import com.epicdima.findwords.base.Mask;
-
 import java.util.Arrays;
 
 public class BooleanMask implements Mask {
@@ -86,6 +84,17 @@ public class BooleanMask implements Mask {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 matrix[i][j] |= another.get(i, j);
+            }
+        }
+
+        return this;
+    }
+
+    @Override
+    public Mask xor(Mask another) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j] ^= another.get(i, j);
             }
         }
 

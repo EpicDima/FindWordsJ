@@ -1,7 +1,5 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.base.Solver;
-import com.epicdima.findwords.base.SolverTest;
 import com.epicdima.findwords.type.SolverType;
 import com.epicdima.findwords.type.WordTrieType;
 
