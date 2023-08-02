@@ -1,5 +1,6 @@
 package com.epicdima.findwords;
 
+import com.epicdima.findwords.solver.CoroutineSolver;
 import com.epicdima.findwords.solver.DefaultSolver;
 import com.epicdima.findwords.solver.FastSolver;
 import com.epicdima.findwords.solver.ForkJoinSolver;
@@ -141,7 +142,8 @@ public class Runner {
         DEFAULT("ds", DefaultSolver.class),
         FAST("fs", FastSolver.class),
         MULTITHREADED("mts", MultiThreadedSolver.class),
-        FORKJOIN("fjs", ForkJoinSolver.class);
+        FORKJOIN("fjs", ForkJoinSolver.class),
+        COROUTINE("cs", CoroutineSolver.class);
 
         public final String key;
         public final Class<?> cls;
