@@ -1,12 +1,13 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.base.Mask;
-import com.epicdima.findwords.base.Solver;
-import com.epicdima.findwords.base.WordAndMask;
-import com.epicdima.findwords.base.WordTrie;
+import com.epicdima.findwords.mask.Mask;
+import com.epicdima.findwords.trie.WordTrie;
 import com.epicdima.findwords.utils.Utils;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public abstract class AbstractSolver implements Solver {
@@ -42,7 +43,7 @@ public abstract class AbstractSolver implements Solver {
         for (WordAndMask wordAndMask : words) {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    wordAndMask.mask.set(i, j, wordAndMask.mask.get(i, j) && !originalMask.get(i, j));
+                    wordAndMask.mask().set(i, j, wordAndMask.mask().get(i, j) && !originalMask.get(i, j));
                 }
             }
         }
@@ -103,6 +104,7 @@ public abstract class AbstractSolver implements Solver {
         return wordsAndMasks;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     protected void f(String word, int x, int y, Mask mask, Set<WordAndMask> wordsAndMasks) {
         if (word.length() >= minWordLength && trie.containsWord(word)) {
             wordsAndMasks.add(new WordAndMask(word, mask.copy()));
@@ -163,34 +165,35 @@ public abstract class AbstractSolver implements Solver {
 
     protected void ffff(List<WordAndMask> matchedWords) {
         Mask invertedOriginalMask = originalMask.copy().invert();
+        Mask[] masks = matchedWords.stream()
+                .map(matchedWord -> matchedWord.mask().copy().and(invertedOriginalMask))
+                .toArray(Mask[]::new);
 
-        List<Mask> masks = new ArrayList<>(matchedWords.size());
-        for (WordAndMask matchedWord : matchedWords) {
-            masks.add(matchedWord.mask.copy().and(invertedOriginalMask));
-        }
-
+        boolean[] indexes = new boolean[masks.length];
         int i = 0;
         for (Mask mask : masks) {
             if (mask.get(0, 0)) {
-                boolean[] indexes = new boolean[masks.size()];
                 indexes[i] = true;
-                f2(mask.copy().or(originalMask), indexes, 0, masks);
+                f2(mask.or(originalMask), indexes, 0, masks);
+                indexes[i] = false;
+                mask.xor(originalMask);
             }
             i++;
         }
     }
 
-    protected void f2(Mask mask, boolean[] indexes, int start, List<Mask> masks) {
+    protected void f2(Mask mask, boolean[] indexes, int start, Mask[] masks) {
         if (mask.isAllTrue()) {
-            rawFullMatchesResults.add(indexes);
+            rawFullMatchesResults.add(Arrays.copyOf(indexes, indexes.length));
             return;
         }
 
         for (int i = start; i < indexes.length; i++) {
-            if (mask.notIntersects(masks.get(i))) {
-                boolean[] indexesCopy = Arrays.copyOf(indexes, indexes.length);
-                indexesCopy[i] = true;
-                f2(mask.copy().or(masks.get(i)), indexesCopy, i, masks);
+            if (mask.notIntersects(masks[i])) {
+                indexes[i] = true;
+                f2(mask.or(masks[i]), indexes, i, masks);
+                indexes[i] = false;
+                mask.xor(masks[i]);
             }
         }
     }

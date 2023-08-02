@@ -1,9 +1,6 @@
-package com.epicdima.findwords.base;
+package com.epicdima.findwords.trie;
 
 import com.epicdima.findwords.utils.Utils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,6 +8,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public abstract class TrieTest {
     protected final String dictionaryPath = Utils.DEFAULT_DICTIONARY;
@@ -36,7 +35,7 @@ public abstract class TrieTest {
         Assertions.assertTrue(trie.containsSubstring("приве"));
         Assertions.assertTrue(trie.containsSubstring("привет"));
 
-        Assertions.assertFalse(trie.containsSubstring("привет1"));
+        Assertions.assertFalse(trie.containsSubstring("приветъ"));
     }
 
     @Test
@@ -65,7 +64,7 @@ public abstract class TrieTest {
         Assertions.assertFalse(trie.containsWord("приве"));
         Assertions.assertTrue(trie.containsWord("привет"));
 
-        Assertions.assertFalse(trie.containsWord("приветссс"));
+        Assertions.assertFalse(trie.containsWord("приветъ"));
     }
 
     @Test

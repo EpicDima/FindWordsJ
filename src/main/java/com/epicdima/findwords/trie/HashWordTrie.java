@@ -1,7 +1,5 @@
 package com.epicdima.findwords.trie;
 
-import com.epicdima.findwords.base.WordTrie;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;

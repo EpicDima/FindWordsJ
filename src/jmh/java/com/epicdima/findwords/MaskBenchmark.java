@@ -1,12 +1,21 @@
 package com.epicdima.findwords;
 
-import com.epicdima.findwords.base.Mask;
-import org.openjdk.jmh.annotations.*;
-
+import com.epicdima.findwords.mask.Mask;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.concurrent.TimeUnit;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -104,6 +113,11 @@ public class MaskBenchmark {
     @Benchmark
     public Mask or() {
         return mask.or(mask2);
+    }
+
+    @Benchmark
+    public Mask xor() {
+        return mask.xor(mask2);
     }
 
     @Benchmark

@@ -1,4 +1,6 @@
-package com.epicdima.findwords.base;
+package com.epicdima.findwords.solver;
+
+import com.epicdima.findwords.trie.WordTrie;
 
 public interface SolverInstantiator {
 

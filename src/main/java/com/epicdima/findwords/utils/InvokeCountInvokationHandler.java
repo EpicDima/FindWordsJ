@@ -13,6 +13,7 @@ public final class InvokeCountInvokationHandler implements InvocationHandler {
     private final Object object;
     private final Class<?> clazz;
     private final String canonicalName;
+
     private InvokeCountInvokationHandler(final Object object) {
         this.object = object;
         this.clazz = object.getClass();

@@ -1,16 +1,15 @@
 package com.epicdima.findwords;
 
-import com.epicdima.findwords.base.Solver;
-import com.epicdima.findwords.base.WordAndMask;
-import com.epicdima.findwords.base.WordTrie;
 import com.epicdima.findwords.solver.DefaultSolver;
 import com.epicdima.findwords.solver.FastSolver;
 import com.epicdima.findwords.solver.ForkJoinSolver;
 import com.epicdima.findwords.solver.MultiThreadedSolver;
+import com.epicdima.findwords.solver.Solver;
+import com.epicdima.findwords.solver.WordAndMask;
 import com.epicdima.findwords.trie.ArrayWordTrie;
 import com.epicdima.findwords.trie.HashWordTrie;
+import com.epicdima.findwords.trie.WordTrie;
 import com.epicdima.findwords.utils.Utils;
-
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -69,7 +68,7 @@ public class Runner {
         System.out.println("Found words:");
         System.out.println(solver.getWords()
                 .stream()
-                .map(wordAndMask -> wordAndMask.word)
+                .map(WordAndMask::word)
                 .collect(Collectors.joining(System.lineSeparator())));
 
         List<List<WordAndMask>> fullMatches = solver.getFullMatches();
@@ -81,7 +80,7 @@ public class Runner {
                     .stream()
                     .map(array -> array
                             .stream()
-                            .map(wordAndMask -> wordAndMask.word)
+                            .map(WordAndMask::word)
                             .collect(Collectors.joining(" ")))
                     .collect(Collectors.joining(System.lineSeparator())));
         }
@@ -260,7 +259,7 @@ public class Runner {
 
             List<Integer> lengths = Arrays.stream(text.split(Pattern.quote(linesSeparator)))
                     .map(String::length)
-                    .collect(Collectors.toList());
+                    .toList();
 
             for (Integer lengthTemp : lengths) {
                 if (!lengthTemp.equals(lengths.get(0))) {

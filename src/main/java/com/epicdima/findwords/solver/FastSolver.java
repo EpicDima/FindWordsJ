@@ -1,8 +1,8 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.base.Mask;
-import com.epicdima.findwords.base.WordTrie;
 import com.epicdima.findwords.mask.BitSetMask;
+import com.epicdima.findwords.mask.Mask;
+import com.epicdima.findwords.trie.WordTrie;
 
 public class FastSolver extends AbstractSolver {
 

@@ -1,15 +1,28 @@
 package com.epicdima.findwords;
 
-import com.epicdima.findwords.base.Solver;
-import com.epicdima.findwords.base.WordTrie;
+import com.epicdima.findwords.solver.Solver;
+import com.epicdima.findwords.trie.WordTrie;
 import com.epicdima.findwords.utils.Utils;
-import org.openjdk.jmh.annotations.*;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.concurrent.TimeUnit;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
-import static com.epicdima.findwords.Matrices.*;
+import static com.epicdima.findwords.Matrices.MATRIX_10_X_10;
+import static com.epicdima.findwords.Matrices.MATRIX_11_X_8;
+import static com.epicdima.findwords.Matrices.MATRIX_19_X_4;
+import static com.epicdima.findwords.Matrices.MATRIX_23_X_26;
+import static com.epicdima.findwords.Matrices.MATRIX_8_X_8;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -32,6 +45,7 @@ public class SolverBenchmark {
             "com.epicdima.findwords.solver.FastSolver",
             "com.epicdima.findwords.solver.MultiThreadedSolver",
             "com.epicdima.findwords.solver.ForkJoinSolver",
+            "com.epicdima.findwords.solver.CoroutineSolver",
     })
     public String solverClass;
 

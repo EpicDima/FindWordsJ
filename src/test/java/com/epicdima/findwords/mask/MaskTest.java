@@ -1,4 +1,4 @@
-package com.epicdima.findwords.base;
+package com.epicdima.findwords.mask;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
