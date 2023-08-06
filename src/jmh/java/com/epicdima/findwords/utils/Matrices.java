@@ -1,4 +1,4 @@
-package com.epicdima.findwords;
+package com.epicdima.findwords.utils;
 
 public final class Matrices {
     public static final String MATRIX_8_X_8 = """

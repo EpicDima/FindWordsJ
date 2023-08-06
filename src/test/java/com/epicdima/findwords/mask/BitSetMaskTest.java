@@ -4,6 +4,6 @@ public class BitSetMaskTest extends MaskTest {
 
     @Override
     protected Mask createMask() {
-        return new BitSetMask(rows, cols);
+        return MaskType.BITSET.createInstance(rows, cols);
     }
 }

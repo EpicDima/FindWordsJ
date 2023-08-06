@@ -1,7 +1,7 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.mask.BooleanMask;
 import com.epicdima.findwords.mask.Mask;
+import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrie;
 
 public class DefaultSolver extends AbstractSolver {
@@ -12,6 +12,6 @@ public class DefaultSolver extends AbstractSolver {
 
     @Override
     protected Mask createOriginalMask(int rows, int cols) {
-        return new BooleanMask(rows, cols);
+        return MaskType.BOOLEAN.createInstance(rows, cols);
     }
 }

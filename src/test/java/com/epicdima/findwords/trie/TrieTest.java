@@ -1,6 +1,6 @@
 package com.epicdima.findwords.trie;
 
-import com.epicdima.findwords.utils.Utils;
+import com.epicdima.findwords.utils.TestUtils;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public abstract class TrieTest {
-    protected final String dictionaryPath = Utils.DEFAULT_DICTIONARY;
+    protected final String dictionaryPath = TestUtils.DEFAULT_DICTIONARY;
 
     protected abstract WordTrie createWordTrie();
 

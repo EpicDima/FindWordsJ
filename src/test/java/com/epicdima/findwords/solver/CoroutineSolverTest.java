@@ -1,7 +1,6 @@
 package com.epicdima.findwords.solver;
 
-import com.epicdima.findwords.type.SolverType;
-import com.epicdima.findwords.type.WordTrieType;
+import com.epicdima.findwords.trie.WordTrieType;
 
 public class CoroutineSolverTest extends SolverTest {
 

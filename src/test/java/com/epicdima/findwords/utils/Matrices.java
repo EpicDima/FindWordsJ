@@ -11,6 +11,27 @@ public final class Matrices {
             баорпутг
             регакшак""";
 
+    public static final String MATRIX_19_X_4 = """
+            ласт
+            ласа
+            ларь
+            лава
+            копа
+            керн
+            кант
+            иена
+            дюна
+            дина
+            вена
+            блин
+            банк
+            аура
+            арат
+            анод
+            анид
+            алла
+            авар""";
+
     private Matrices() {
         throw new AssertionError("private constructor, bitch");
     }

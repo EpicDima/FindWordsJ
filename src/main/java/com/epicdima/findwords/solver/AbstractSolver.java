@@ -164,15 +164,13 @@ public abstract class AbstractSolver implements Solver {
     }
 
     protected void ffff(List<WordAndMask> matchedWords) {
-        Mask invertedOriginalMask = originalMask.copy().invert();
-        Mask[] masks = matchedWords.stream()
-                .map(matchedWord -> matchedWord.mask().copy().and(invertedOriginalMask))
-                .toArray(Mask[]::new);
+        Mask[] masks = getRawMasks(matchedWords);
+        int[] minXY = getMinXAndMinY(masks);
 
         boolean[] indexes = new boolean[masks.length];
         int i = 0;
         for (Mask mask : masks) {
-            if (mask.get(0, 0)) {
+            if (mask.get(minXY[0], minXY[1])) {
                 indexes[i] = true;
                 f2(mask.or(originalMask), indexes, 0, masks);
                 indexes[i] = false;
@@ -196,5 +194,48 @@ public abstract class AbstractSolver implements Solver {
                 mask.xor(masks[i]);
             }
         }
+    }
+
+    protected Mask[] getRawMasks(List<WordAndMask> matchedWords) {
+        Mask invertedOriginalMask = originalMask.copy().invert();
+        return matchedWords.stream()
+                .map(matchedWord -> matchedWord.mask().copy().and(invertedOriginalMask))
+                .toArray(Mask[]::new);
+    }
+
+    protected int[] getMinXAndMinY(Mask[] masks) {
+        int[][] count = calculateMaskCountForEachCell(masks);
+
+        int min = Integer.MAX_VALUE;
+        int minX = 0;
+        int minY = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (count[i][j] < min) {
+                    min = count[i][j];
+                    minX = i;
+                    minY = j;
+                }
+            }
+        }
+
+        return new int[]{minX, minY};
+    }
+
+    private int[][] calculateMaskCountForEachCell(Mask[] masks) {
+        int[][] count = new int[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                for (Mask mask : masks) {
+                    if (mask.get(i, j)) {
+                        count[i][j]++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 }

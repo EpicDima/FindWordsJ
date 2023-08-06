@@ -1,9 +1,7 @@
 package com.epicdima.findwords;
 
 import com.epicdima.findwords.mask.Mask;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import com.epicdima.findwords.mask.MaskType;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -20,23 +18,24 @@ import org.openjdk.jmh.annotations.Warmup;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 2, time = 5)
-@Measurement(iterations = 5, time = 5)
+@Warmup(iterations = 1, time = 4)
+@Measurement(iterations = 3, time = 4)
 @State(Scope.Benchmark)
 public class MaskBenchmark {
     @Param({"8", "128"})
     public int size;
 
     @Param({
-            "com.epicdima.findwords.mask.BooleanMask",
-            "com.epicdima.findwords.mask.BitSetMask",
-            "com.epicdima.findwords.mask.FlatBooleanMask",
+            "BOOLEAN",
+            "FLAT",
+            "BITSET",
     })
-    public String maskClass;
+    public String maskTypeName;
+
+    private MaskType maskType;
 
     private int middleIndex;
     private int lastIndex;
-    private MethodHandle constructor;
     private Mask mask;
     private Mask mask2;
 
@@ -45,19 +44,17 @@ public class MaskBenchmark {
         middleIndex = size / 2;
         lastIndex = size - 1;
 
-        constructor = MethodHandles.publicLookup()
-                .findConstructor(Class.forName(maskClass),
-                        MethodType.methodType(void.class, int.class, int.class));
+        maskType = MaskType.valueOf(maskTypeName);
 
-        mask = (Mask) constructor.invoke(size, size);
+        mask = maskType.createInstance(size, size);
 
         mask2 = mask.copy();
         mask2.set(lastIndex, lastIndex, true);
     }
 
     @Benchmark
-    public Object init() throws Throwable {
-        return constructor.invoke(size, size);
+    public Object init() {
+        return maskType.createInstance(size, size);
     }
 
     @Benchmark

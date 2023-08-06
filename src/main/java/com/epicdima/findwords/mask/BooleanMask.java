@@ -14,6 +14,7 @@ public class BooleanMask implements Mask {
         this.matrix = matrix;
     }
 
+    @SuppressWarnings("unused") // used through MethodHandle
     public BooleanMask(int rows, int cols) {
         this(rows, cols, new boolean[rows][cols]);
     }

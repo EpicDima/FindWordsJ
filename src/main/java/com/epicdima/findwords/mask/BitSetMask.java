@@ -20,6 +20,7 @@ public class BitSetMask implements Mask {
         this(rows, cols, size, new BitSet(size));
     }
 
+    @SuppressWarnings("unused") // used through MethodHandle
     public BitSetMask(int rows, int cols) {
         this(rows, cols, rows * cols);
     }

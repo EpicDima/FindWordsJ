@@ -20,6 +20,7 @@ public class FlatBooleanMask implements Mask {
         this(rows, cols, size, new boolean[size]);
     }
 
+    @SuppressWarnings("unused") // used through MethodHandle
     public FlatBooleanMask(int rows, int cols) {
         this(rows, cols, rows * cols);
     }
