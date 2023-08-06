@@ -13,6 +13,11 @@ repositories {
 
 tasks.withType(JavaCompile::class.java) {
     options.encoding = "UTF-8"
+    options.compilerArgs = listOf("--enable-preview", "--add-modules", "jdk.incubator.concurrent")
+}
+
+tasks.withType(JavaExec::class.java) {
+    jvmArgs = listOf("--enable-preview")
 }
 
 dependencies {

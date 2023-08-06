@@ -27,12 +27,8 @@ public class ForkJoinSolver extends MultiThreadedSolver {
             if (masks[i].get(minXY[0], minXY[1])) {
                 boolean[] indexes = new boolean[masks.length];
                 indexes[i] = true;
-                tasks.add(forkJoinPool.submit(new F2Action(
-                        masks[i].copy().or(originalMask),
-                        indexes,
-                        0,
-                        masks)
-                ));
+                Mask mask = masks[i].copy().or(originalMask);
+                tasks.add(forkJoinPool.submit(new F2Action(mask, indexes, 0, masks)));
             }
         }
 
@@ -40,7 +36,6 @@ public class ForkJoinSolver extends MultiThreadedSolver {
             task.join();
         }
     }
-
 
     private class F2Action extends RecursiveAction {
         private final Mask mask;

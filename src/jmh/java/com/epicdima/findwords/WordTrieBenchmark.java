@@ -1,10 +1,8 @@
 package com.epicdima.findwords;
 
 import com.epicdima.findwords.trie.WordTrie;
-import com.epicdima.findwords.utils.Utils;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import com.epicdima.findwords.trie.WordTrieType;
+import com.epicdima.findwords.utils.BenchmarkUtils;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -21,8 +19,8 @@ import org.openjdk.jmh.annotations.Warmup;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 2, time = 5)
-@Measurement(iterations = 5, time = 5)
+@Warmup(iterations = 1, time = 4)
+@Measurement(iterations = 3, time = 4)
 @State(Scope.Benchmark)
 public class WordTrieBenchmark {
 
@@ -36,28 +34,26 @@ public class WordTrieBenchmark {
     private static final String PARTIAL_UNKNOWN_WORD = "привилегированностъ";
 
     @Param({
-            "com.epicdima.findwords.trie.HashWordTrie",
-            "com.epicdima.findwords.trie.ArrayWordTrie",
-            "com.epicdima.findwords.trie.SetWordTrie",
+            "HASH",
+            "ARRAY",
+            "SET",
     })
-    public String wordTrieClass;
+    public String wordTrieTypeName;
 
-    private MethodHandle createInstanceMethod;
+    private WordTrieType wordTrieType;
+
     private WordTrie wordTrie;
 
     @Setup
     public void setup() throws Throwable {
-        createInstanceMethod = MethodHandles.publicLookup()
-                .findStatic(Class.forName(wordTrieClass), "createInstance",
-                        MethodType.methodType(WordTrie.class, String.class));
-
-        wordTrie = (WordTrie) createInstanceMethod.invoke(Utils.DEFAULT_DICTIONARY);
+        wordTrieType = WordTrieType.valueOf(wordTrieTypeName);
+        wordTrie = wordTrieType.createInstance(BenchmarkUtils.DEFAULT_DICTIONARY);
     }
 
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     @Benchmark
-    public Object init() throws Throwable {
-        return createInstanceMethod.invoke(Utils.DEFAULT_DICTIONARY);
+    public Object init() {
+        return wordTrieType.createInstance(BenchmarkUtils.DEFAULT_DICTIONARY);
     }
 
     @Benchmark

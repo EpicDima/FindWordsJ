@@ -1,20 +1,11 @@
 package com.epicdima.findwords;
 
-import com.epicdima.findwords.solver.CoroutineSolver;
-import com.epicdima.findwords.solver.DefaultSolver;
-import com.epicdima.findwords.solver.FastSolver;
-import com.epicdima.findwords.solver.ForkJoinSolver;
-import com.epicdima.findwords.solver.MultiThreadedSolver;
 import com.epicdima.findwords.solver.Solver;
+import com.epicdima.findwords.solver.SolverType;
 import com.epicdima.findwords.solver.WordAndMask;
-import com.epicdima.findwords.trie.ArrayWordTrie;
-import com.epicdima.findwords.trie.HashWordTrie;
 import com.epicdima.findwords.trie.WordTrie;
+import com.epicdima.findwords.trie.WordTrieType;
 import com.epicdima.findwords.utils.Utils;
-import java.io.InputStream;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,45 +14,44 @@ import java.util.stream.Collectors;
 public class Runner {
 
     public static void main(String[] args) {
+        List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes = getConsoleWordTrieTypes();
+        List<ConsoleEnumType<SolverType>> consoleSolverTypes = getConsoleSolverTypes();
+
+        String defaultWordTrieKey = consoleWordTrieTypes.get(0).getConsoleKey();
+        String defaultSolverKey = consoleSolverTypes.get(0).getConsoleKey();
+
         if (args.length == 0) {
-            printHelp();
+            printHelp(consoleWordTrieTypes, consoleSolverTypes, defaultWordTrieKey, defaultSolverKey);
             return;
         }
 
-        Arguments arguments = Arguments.parse(args);
+        Arguments arguments = Arguments.parse(defaultWordTrieKey, defaultSolverKey, args);
 
-        WordTrie trie = WordTrieType.getByKey(arguments.wordTrieName).createInstance(arguments.dictionaryPath);
-        Solver solver = SolverType.getByKey(arguments.solverName).createInstance(arguments.linesSeparator, trie);
+        WordTrie wordTrie = createWordTrie(consoleWordTrieTypes, arguments.wordTrieName, arguments.dictionaryPath);
+        Solver solver = createSolver(consoleSolverTypes, arguments.solverName, arguments.linesSeparator, wordTrie);
 
         solver.solve(arguments.text, arguments.minLength, arguments.maxLength, arguments.fullMatch);
 
         printResult(solver);
     }
 
-    private static void printHelp() {
-        System.out.println("The first required argument is text");
+    private static void printHelp(
+            List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes,
+            List<ConsoleEnumType<SolverType>> consoleSolverTypes,
+            String defaultWordTrieKey,
+            String defaultSolverKey
+    ) {
+        System.out.println("The first required argument is text. A space is a character where there cannot be a letter.");
         System.out.println("-fm  boolean         - to find the full combination                        (default = false)");
         System.out.println("-min integer         - minimum number of characters for a word (inclusive) (default = 4)");
         System.out.println("-max integer         - maximum number of characters for a word (inclusive) (default = 10)");
         System.out.println("-ls  string          - string for dividing text into lines                 (default = /)");
         System.out.println("-dp  string          - path to the dictionary file                         (default = '' - for using built-in dictionary)");
-        System.out.println("-wtr [" + getKeys(WordTrieType.values()) + "]      - string for selecting the word trie                  (default = " + WordTrieType.values()[0].key + ")");
-        System.out.println("(" + getKeysAndNames(WordTrieType.values()) + ")");
-        System.out.println("-s   [" + getKeys(SolverType.values()) + "] - string for selecting the solver                     (default = " + SolverType.values()[0].key + ")");
-        System.out.println("(" + getKeysAndNames(SolverType.values()) + ")");
+        System.out.println("-wtr [" + ConsoleEnumType.getConsoleKeys(consoleWordTrieTypes) + "]      - string for selecting the word trie                  (default = " + defaultWordTrieKey + ")");
+        System.out.println("(" + ConsoleEnumType.getConsoleKeysAndTypeClassNames(consoleWordTrieTypes) + ")");
+        System.out.println("-s   [" + ConsoleEnumType.getConsoleKeys(consoleSolverTypes) + "] - string for selecting the solver                     (default = " + defaultSolverKey + ")");
+        System.out.println("(" + ConsoleEnumType.getConsoleKeysAndTypeClassNames(consoleSolverTypes) + ")");
         System.out.println();
-    }
-
-    private static String getKeys(EnumType[] values) {
-        return Arrays.stream(values)
-                .map(EnumType::getKey)
-                .collect(Collectors.joining("|"));
-    }
-
-    private static String getKeysAndNames(EnumType[] values) {
-        return Arrays.stream(values)
-                .map(value -> value.getKey() + ": " + value.getClassName())
-                .collect(Collectors.joining(", "));
     }
 
     private static void printResult(Solver solver) {
@@ -87,109 +77,97 @@ public class Runner {
         }
     }
 
+    private static List<ConsoleEnumType<WordTrieType>> getConsoleWordTrieTypes() {
+        return Arrays.stream(WordTrieType.values())
+                .map((wordTrieType) -> new ConsoleEnumType<WordTrieType>() {
 
-    private enum WordTrieType implements EnumType {
-        HASH("hash", HashWordTrie.class),
-        ARRAY("arr", ArrayWordTrie.class);
+                    @Override
+                    public WordTrieType getEnumType() {
+                        return wordTrieType;
+                    }
 
-        public final String key;
-        public final Class<?> cls;
+                    @Override
+                    public String getTypeClassName() {
+                        return wordTrieType.getWordTrieClass().getSimpleName();
+                    }
+                })
+                .collect(Collectors.toList());
+    }
 
-        WordTrieType(String key, Class<?> cls) {
-            this.key = key;
-            this.cls = cls;
-        }
+    private static List<ConsoleEnumType<SolverType>> getConsoleSolverTypes() {
+        return Arrays.stream(SolverType.values())
+                .map((solverType) -> new ConsoleEnumType<SolverType>() {
 
-        public static WordTrieType getByKey(String key) {
-            for (WordTrieType type : values()) {
-                if (type.getKey().equals(key)) {
-                    return type;
-                }
-            }
+                    @Override
+                    public SolverType getEnumType() {
+                        return solverType;
+                    }
 
-            throw new IllegalArgumentException("Unknown word trie key '" + key + "'");
-        }
+                    @Override
+                    public String getTypeClassName() {
+                        return solverType.getSolverClass().getSimpleName();
+                    }
+                })
+                .collect(Collectors.toList());
 
-        public WordTrie createInstance(String dictionaryPath) {
-            try {
-                if (dictionaryPath.isEmpty()) {
-                    MethodType methodType = MethodType.methodType(WordTrie.class, InputStream.class);
-                    MethodHandle createInstance = MethodHandles.publicLookup().findStatic(cls, "createInstance", methodType);
-                    return (WordTrie) createInstance.invokeExact(getClass().getResourceAsStream(Utils.DEFAULT_DICTIONARY));
-                } else {
-                    MethodType methodType = MethodType.methodType(WordTrie.class, String.class);
-                    MethodHandle createInstance = MethodHandles.publicLookup().findStatic(cls, "createInstance", methodType);
-                    return (WordTrie) createInstance.invokeExact(dictionaryPath);
-                }
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
+    }
 
-        @Override
-        public String getKey() {
-            return key;
-        }
-
-        @Override
-        public String getClassName() {
-            return cls.getSimpleName();
+    private static WordTrie createWordTrie(
+            List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes,
+            String key,
+            String dictionaryPath
+    ) {
+        WordTrieType wordTrieType = consoleWordTrieTypes.stream()
+                .filter((consoleWordTrieType) -> consoleWordTrieType.getConsoleKey().equals(key))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown word trie key '" + key + "'"))
+                .getEnumType();
+        if (dictionaryPath.isEmpty()) {
+            return wordTrieType.createInstance(WordTrieType.class.getResourceAsStream(Utils.DEFAULT_DICTIONARY));
+        } else {
+            return wordTrieType.createInstance(dictionaryPath);
         }
     }
 
-
-    private enum SolverType implements EnumType {
-        DEFAULT("ds", DefaultSolver.class),
-        FAST("fs", FastSolver.class),
-        MULTITHREADED("mts", MultiThreadedSolver.class),
-        FORKJOIN("fjs", ForkJoinSolver.class),
-        COROUTINE("cs", CoroutineSolver.class);
-
-        public final String key;
-        public final Class<?> cls;
-
-        SolverType(String key, Class<?> cls) {
-            this.key = key;
-            this.cls = cls;
-        }
-
-        public static SolverType getByKey(String key) {
-            for (SolverType type : values()) {
-                if (type.getKey().equals(key)) {
-                    return type;
-                }
-            }
-
-            throw new IllegalArgumentException("Unknown solver key '" + key + "'");
-        }
-
-        public Solver createInstance(String linesSeparator, WordTrie trie) {
-            try {
-                MethodType methodType = MethodType.methodType(void.class, String.class, WordTrie.class);
-                MethodHandle constructor = MethodHandles.publicLookup().findConstructor(cls, methodType);
-                return (Solver) constructor.invokeExact(linesSeparator, trie);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public String getKey() {
-            return key;
-        }
-
-        @Override
-        public String getClassName() {
-            return cls.getSimpleName();
-        }
+    private static Solver createSolver(
+            List<ConsoleEnumType<SolverType>> consoleSolverTypes,
+            String key,
+            String linesSeparator,
+            WordTrie trie
+    ) {
+        SolverType solverType = consoleSolverTypes.stream()
+                .filter((consoleSolverType) -> consoleSolverType.getConsoleKey().equals(key))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown solver key '" + key + "'"))
+                .getEnumType();
+        return solverType.createInstance(linesSeparator, trie);
     }
 
+    private interface ConsoleEnumType<E extends Enum<E>> {
 
-    private interface EnumType {
+        E getEnumType();
 
-        String getKey();
+        String getTypeClassName();
 
-        String getClassName();
+        default String getConsoleKey() {
+            return getTypeClassName().chars()
+                    .filter(Character::isUpperCase)
+                    .map(Character::toLowerCase)
+                    .mapToObj(Character::toString)
+                    .collect(Collectors.joining());
+        }
+
+        static <E extends Enum<E>> String getConsoleKeys(List<ConsoleEnumType<E>> types) {
+            return types.stream()
+                    .map(ConsoleEnumType::getConsoleKey)
+                    .collect(Collectors.joining("|"));
+        }
+
+        static <E extends Enum<E>> String getConsoleKeysAndTypeClassNames(List<ConsoleEnumType<E>> types) {
+            return types.stream()
+                    .map(value -> value.getConsoleKey() + ": " + value.getTypeClassName())
+                    .collect(Collectors.joining(", "));
+        }
     }
 
     private static class Arguments {
@@ -199,11 +177,16 @@ public class Runner {
         public int maxLength = 10;
         public String linesSeparator = "/";
         public String dictionaryPath = "";
-        public String wordTrieName = WordTrieType.values()[0].key;
-        public String solverName = SolverType.values()[0].key;
+        public String wordTrieName;
+        public String solverName;
 
-        private static Arguments parse(String[] args) {
-            Arguments arguments = new Arguments();
+        Arguments(String wordTrieName, String solverName) {
+            this.wordTrieName = wordTrieName;
+            this.solverName = solverName;
+        }
+
+        private static Arguments parse(String defaultWordTrieKey, String defaultSolverKey, String[] args) {
+            Arguments arguments = new Arguments(defaultWordTrieKey, defaultSolverKey);
 
             arguments.text = args[0];
 

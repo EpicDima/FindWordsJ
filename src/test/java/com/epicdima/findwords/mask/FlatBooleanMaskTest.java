@@ -4,6 +4,6 @@ public class FlatBooleanMaskTest extends MaskTest {
 
     @Override
     protected Mask createMask() {
-        return new FlatBooleanMask(rows, cols);
+        return MaskType.FLAT.createInstance(rows, cols);
     }
 }

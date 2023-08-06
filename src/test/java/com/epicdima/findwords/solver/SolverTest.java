@@ -1,14 +1,15 @@
 package com.epicdima.findwords.solver;
 
 import com.epicdima.findwords.utils.Matrices;
-import com.epicdima.findwords.utils.Utils;
+import com.epicdima.findwords.utils.TestUtils;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public abstract class SolverTest {
-    protected final String dictionaryPath = Utils.DEFAULT_DICTIONARY;
+    protected final String dictionaryPath = TestUtils.DEFAULT_DICTIONARY;
     protected final String linesSeparator = "\n";
 
     private final Solver solver = createSolver();
@@ -59,6 +60,14 @@ public abstract class SolverTest {
                 "гербарий гладиатор гусар домысел дружба катушка подготовка проигрыш соль"
         };
 
+        List<CharSequence> correctFullMatchesList = Arrays.stream(correctFullMatches)
+                .map(fullMatch -> Arrays.stream(fullMatch.toString().split(" "))
+                        .sorted()
+                        .collect(Collectors.joining(" ")))
+                .sorted()
+                .map(s -> (CharSequence) s)
+                .toList();
+
         List<CharSequence> fullMatches = solver.getFullMatches()
                 .stream()
                 .map(fullMatch -> fullMatch
@@ -69,10 +78,68 @@ public abstract class SolverTest {
                 .sorted()
                 .collect(Collectors.toList());
 
-        Assertions.assertEquals(correctFullMatches.length, fullMatches.size());
+        Assertions.assertEquals(correctFullMatchesList.size(), fullMatches.size());
 
-        for (int i = 0; i < correctFullMatches.length; i++) {
-            Assertions.assertEquals(correctFullMatches[i], fullMatches.get(i));
+        for (int i = 0; i < correctFullMatchesList.size(); i++) {
+            Assertions.assertEquals(correctFullMatchesList.get(i), fullMatches.get(i));
+        }
+    }
+
+    // @Test // because large test (default solver solves very slow)
+    @SuppressWarnings({"JUnit3StyleTestMethodInJUnit4Class", "unused"})
+    public void test4() {
+        String text = Matrices.MATRIX_19_X_4;
+
+        solver.solve(text, 4, 10, true);
+
+        CharSequence[] correctFullMatches = new CharSequence[]{
+                "тара анид блин дюна аура керн анид анод копа банк ларь лава кант вена ласа алла иена ласт авар",
+                "тара анид блин дюна аура керн дина анод копа банк ларь лава кант вена ласа алла иена ласт авар",
+                "тара анид блин дюна аура керн копа банк ларь лава кант вена диод ласа алла иена ласт анна авар",
+                "анид блин дюна аура керн анид анод копа банк ларь лава кант вена ласа алла иена арат ласт авар",
+                "анид блин дюна аура керн дина анод копа банк ларь лава кант вена ласа алла иена арат ласт авар",
+                "анид блин дюна аура керн копа банк ларь лава кант вена диод ласа алла иена арат ласт анна авар",
+                "тара блин дюна аура керн анид анод копа банк ларь лава кант дина вена ласа алла иена ласт авар",
+                "тара блин дюна аура керн дина анод копа банк ларь лава кант дина вена ласа алла иена ласт авар",
+                "тара блин дюна аура керн копа банк ларь лава кант дина вена диод ласа алла иена ласт анна авар",
+                "анид блин дюна керн анид анод арат копа банк ларь лава кант аура вена ласа алла иена ласт авар",
+                "анид блин дюна керн анид анод копа банк тара ларь лава кант аура вена ласа алла иена ласт авар",
+                "анид блин дюна керн дина анод арат копа банк ларь лава кант аура вена ласа алла иена ласт авар",
+                "анид блин дюна керн дина анод копа банк тара ларь лава кант аура вена ласа алла иена ласт авар",
+                "анид блин дюна керн арат копа банк ларь лава кант аура вена диод ласа алла иена ласт анна авар",
+                "анид блин дюна керн копа банк тара ларь лава кант аура вена диод ласа алла иена ласт анна авар",
+                "блин дюна аура керн анид анод копа банк ларь лава кант дина вена ласа алла иена арат ласт авар",
+                "блин дюна аура керн дина анод копа банк ларь лава кант дина вена ласа алла иена арат ласт авар",
+                "блин дюна аура керн копа банк ларь лава кант дина вена диод ласа алла иена арат ласт анна авар",
+                "блин дюна керн анид анод арат копа банк ларь лава кант дина аура вена ласа алла иена ласт авар",
+                "блин дюна керн анид анод копа банк тара ларь лава кант дина аура вена ласа алла иена ласт авар",
+                "блин дюна керн дина анод арат копа банк ларь лава кант дина аура вена ласа алла иена ласт авар",
+                "блин дюна керн дина анод копа банк тара ларь лава кант дина аура вена ласа алла иена ласт авар",
+                "блин дюна керн арат копа банк ларь лава кант дина аура вена диод ласа алла иена ласт анна авар",
+                "блин дюна керн копа банк тара ларь лава кант дина аура вена диод ласа алла иена ласт анна авар"
+        };
+        List<CharSequence> correctFullMatchesList = Arrays.stream(correctFullMatches)
+                .map(fullMatch -> Arrays.stream(fullMatch.toString().split(" "))
+                        .sorted()
+                        .collect(Collectors.joining(" ")))
+                .sorted()
+                .map(s -> (CharSequence) s)
+                .toList();
+
+        List<CharSequence> fullMatches = solver.getFullMatches()
+                .stream()
+                .map(fullMatch -> fullMatch
+                        .stream()
+                        .map(WordAndMask::word)
+                        .sorted()
+                        .collect(Collectors.joining(" ")))
+                .sorted()
+                .collect(Collectors.toList());
+
+        Assertions.assertEquals(correctFullMatchesList.size(), fullMatches.size());
+
+        for (int i = 0; i < correctFullMatchesList.size(); i++) {
+            Assertions.assertEquals(correctFullMatchesList.get(i), fullMatches.get(i));
         }
     }
 }

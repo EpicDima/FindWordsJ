@@ -1,10 +1,10 @@
 package com.epicdima.findwords;
 
 import com.epicdima.findwords.solver.Solver;
+import com.epicdima.findwords.solver.SolverType;
 import com.epicdima.findwords.trie.WordTrie;
-import com.epicdima.findwords.utils.Utils;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import com.epicdima.findwords.trie.WordTrieType;
+import com.epicdima.findwords.utils.BenchmarkUtils;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -18,50 +18,43 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import static com.epicdima.findwords.Matrices.MATRIX_10_X_10;
-import static com.epicdima.findwords.Matrices.MATRIX_11_X_8;
-import static com.epicdima.findwords.Matrices.MATRIX_19_X_4;
-import static com.epicdima.findwords.Matrices.MATRIX_23_X_26;
-import static com.epicdima.findwords.Matrices.MATRIX_8_X_8;
+import static com.epicdima.findwords.utils.Matrices.MATRIX_10_X_10;
+import static com.epicdima.findwords.utils.Matrices.MATRIX_11_X_8;
+import static com.epicdima.findwords.utils.Matrices.MATRIX_19_X_4;
+import static com.epicdima.findwords.utils.Matrices.MATRIX_23_X_26;
+import static com.epicdima.findwords.utils.Matrices.MATRIX_8_X_8;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 2, time = 10)
-@Measurement(iterations = 5, time = 10)
+@Warmup(iterations = 1, time = 8)
+@Measurement(iterations = 3, time = 8)
 @State(Scope.Benchmark)
 public class SolverBenchmark {
     private static final String LINES_SEPARATOR = "\n";
 
     @Param({
-            "com.epicdima.findwords.trie.HashWordTrie",
-            "com.epicdima.findwords.trie.ArrayWordTrie",
-            "com.epicdima.findwords.trie.SetWordTrie",
+            "HASH",
+            "ARRAY",
+            "SET",
     })
-    public String wordTrieClass;
+    public String wordTrieTypeName;
 
     @Param({
-            "com.epicdima.findwords.solver.DefaultSolver",
-            "com.epicdima.findwords.solver.FastSolver",
-            "com.epicdima.findwords.solver.MultiThreadedSolver",
-            "com.epicdima.findwords.solver.ForkJoinSolver",
-            "com.epicdima.findwords.solver.CoroutineSolver",
+            "DEFAULT",
+            "FAST",
+            "MULTITHREADED",
+            "FORKJOIN",
+            "COROUTINE",
     })
-    public String solverClass;
+    public String solverTypeName;
 
     private Solver solver;
 
     @Setup
-    public void setup() throws Throwable {
-        WordTrie wordTrie = (WordTrie) MethodHandles.publicLookup()
-                .findStatic(Class.forName(wordTrieClass), "createInstance",
-                        MethodType.methodType(WordTrie.class, String.class))
-                .invoke(Utils.DEFAULT_DICTIONARY);
-
-        solver = (Solver) MethodHandles.publicLookup()
-                .findConstructor(Class.forName(solverClass),
-                        MethodType.methodType(void.class, String.class, WordTrie.class))
-                .invoke(LINES_SEPARATOR, wordTrie);
+    public void setup() {
+        WordTrie wordTrie = WordTrieType.valueOf(wordTrieTypeName).createInstance(BenchmarkUtils.DEFAULT_DICTIONARY);
+        solver = SolverType.valueOf(solverTypeName).createInstance(LINES_SEPARATOR, wordTrie);
     }
 
     @Benchmark
