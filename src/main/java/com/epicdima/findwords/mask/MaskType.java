@@ -31,7 +31,6 @@ public enum MaskType {
         }
     }
 
-    @SuppressWarnings("unused") // maybe will need
     public Class<? extends Mask> getMaskClass() {
         return maskClass;
     }

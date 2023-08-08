@@ -26,6 +26,11 @@ public class BitSetMask implements Mask {
     }
 
     @Override
+    public boolean get(int index) {
+        return bitSet.get(index);
+    }
+
+    @Override
     public boolean get(int i, int j) {
         return bitSet.get(i * cols + j);
     }

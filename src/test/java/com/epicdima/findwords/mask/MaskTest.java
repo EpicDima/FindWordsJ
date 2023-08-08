@@ -10,7 +10,36 @@ public abstract class MaskTest {
     protected abstract Mask createMask();
 
     @Test
-    void setAndGet() {
+    void setAndGet1() {
+        Mask mask = createMask();
+
+        mask.set(0, 0, true);
+        mask.set(0, 1, true);
+        mask.set(1, 0, true);
+        mask.set(1, 1, true);
+        mask.set(rows - 1, cols - 1, true);
+
+        Assertions.assertTrue(mask.get(0));
+        Assertions.assertTrue(mask.get(1));
+        Assertions.assertTrue(mask.get(cols));
+        Assertions.assertTrue(mask.get(cols + 1));
+        Assertions.assertTrue(mask.get(rows * cols - 1));
+
+        mask.set(0, 0, false);
+        mask.set(0, 1, false);
+        mask.set(1, 0, false);
+        mask.set(1, 1, false);
+        mask.set(rows - 1, cols - 1, false);
+
+        Assertions.assertFalse(mask.get(0));
+        Assertions.assertFalse(mask.get(1));
+        Assertions.assertFalse(mask.get(cols));
+        Assertions.assertFalse(mask.get(cols + 1));
+        Assertions.assertFalse(mask.get(rows * cols - 1));
+    }
+
+    @Test
+    void setAndGet2() {
         Mask mask = createMask();
 
         mask.set(0, 0, true);
@@ -143,6 +172,29 @@ public abstract class MaskTest {
         Assertions.assertTrue(mask2.isAllFalse());
         Assertions.assertTrue(mask1.get(0, 0));
         Assertions.assertFalse(mask2.get(0, 0));
+    }
+
+    @Test
+    void xor() {
+        Mask mask1 = createMask();
+        Mask mask2 = createMask();
+
+        mask1.xor(mask2);
+        Assertions.assertTrue(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+
+        mask1.set(0, 0, true);
+        mask1.xor(mask2);
+        Assertions.assertFalse(mask1.isAllFalse());
+        Assertions.assertTrue(mask2.isAllFalse());
+        Assertions.assertTrue(mask1.get(0, 0));
+
+        mask2.set(0, 0, true);
+        mask1.xor(mask2);
+        Assertions.assertTrue(mask1.isAllFalse());
+        Assertions.assertFalse(mask2.isAllFalse());
+        Assertions.assertFalse(mask1.get(0, 0));
+        Assertions.assertTrue(mask2.get(0, 0));
     }
 
     @Test

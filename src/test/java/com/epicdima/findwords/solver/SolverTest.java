@@ -29,6 +29,30 @@ public abstract class SolverTest {
     }
 
     @Test
+    public void test11() {
+        String text = "при\nтев\nдуб";
+
+        solver.solve(text, 3, 6, true);
+
+        List<CharSequence> words = solver.getWords().stream().map(WordAndMask::word).collect(Collectors.toList());
+
+        List<CharSequence> fullMatches = solver.getFullMatches()
+                .stream()
+                .map(fullMatch -> fullMatch
+                        .stream()
+                        .map(WordAndMask::word)
+                        .sorted()
+                        .collect(Collectors.joining(" ")))
+                .sorted()
+                .collect(Collectors.toList());
+
+        Assertions.assertTrue(words.contains("привет"));
+        Assertions.assertTrue(words.contains("дуб"));
+
+        Assertions.assertFalse(fullMatches.isEmpty());
+    }
+
+    @Test
     public void test2() {
         String text = Matrices.MATRIX_8_X_8;
 
@@ -85,8 +109,7 @@ public abstract class SolverTest {
         }
     }
 
-    // @Test // because large test (default solver solves very slow)
-    @SuppressWarnings({"JUnit3StyleTestMethodInJUnit4Class", "unused"})
+    @Test
     public void test4() {
         String text = Matrices.MATRIX_19_X_4;
 

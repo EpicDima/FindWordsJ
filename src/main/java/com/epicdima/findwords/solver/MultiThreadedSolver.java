@@ -1,6 +1,7 @@
 package com.epicdima.findwords.solver;
 
 import com.epicdima.findwords.mask.Mask;
+import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrie;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,27 +10,47 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class MultiThreadedSolver extends FastSolver {
+public class MultiThreadedSolver extends DefaultSolver {
 
-    public MultiThreadedSolver(String linesSeparator, WordTrie trie) {
-        super(linesSeparator, trie);
+    protected ExecutorService threadPool;
+
+    public MultiThreadedSolver(String linesSeparator, MaskType maskType, WordTrie wordTrie) {
+        super(linesSeparator, maskType, wordTrie);
     }
 
     @Override
     protected void ffff(List<WordAndMask> matchedWords) {
-        Mask[] masks = getRawMasks(matchedWords);
-        int[] minXY = getMinXAndMinY(masks);
+        List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
 
-        try (ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
-            List<Future<?>> futures = new ArrayList<>(masks.length);
+        threadPool = Executors.newCachedThreadPool();
+        try {
+            f2(originalMask.copy(), matrix, 0, new ArrayList<>());
+        } finally {
+            threadPool.close();
+        }
+    }
 
-            for (int i = 0; i < masks.length; i++) {
-                if (masks[i].get(minXY[0], minXY[1])) {
-                    int finalI = i;
+    @Override
+    protected void f2(Mask mask, List<WordAndMask>[][] matrix, int startIndex, List<WordAndMask> result) {
+        if (mask.isAllTrue()) {
+            fullMatches.add(result);
+            return;
+        }
+
+        for (int i = startIndex; i < rows * cols; i++) {
+            if (mask.get(i)) {
+                continue;
+            }
+            List<Future<?>> futures = new ArrayList<>();
+
+            for (WordAndMask positionWordAndMask : matrix[i / cols][i % cols]) {
+                if (mask.notIntersects(positionWordAndMask.mask())) {
+                    final int finalI = i;
                     futures.add(threadPool.submit(() -> {
-                        boolean[] indexes = new boolean[masks.length];
-                        indexes[finalI] = true;
-                        f2(masks[finalI].copy().or(originalMask), indexes, 0, masks);
+                        List<WordAndMask> tempResult = new ArrayList<>(result.size() + 1);
+                        tempResult.addAll(result);
+                        tempResult.add(positionWordAndMask);
+                        f2(mask.copy().or(positionWordAndMask.mask()), matrix, finalI + 1, tempResult);
                     }));
                 }
             }
@@ -42,6 +63,7 @@ public class MultiThreadedSolver extends FastSolver {
                     future.cancel(true);
                 }
             }
+            break;
         }
     }
 }

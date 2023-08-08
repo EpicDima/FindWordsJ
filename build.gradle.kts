@@ -11,12 +11,16 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType(JavaCompile::class.java) {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs = listOf("--enable-preview", "--add-modules", "jdk.incubator.concurrent")
 }
 
-tasks.withType(JavaExec::class.java) {
+tasks.withType<JavaExec> {
+    jvmArgs = listOf("--enable-preview")
+}
+
+tasks.withType<Test> {
     jvmArgs = listOf("--enable-preview")
 }
 

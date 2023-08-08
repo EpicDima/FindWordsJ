@@ -26,6 +26,11 @@ public class FlatBooleanMask implements Mask {
     }
 
     @Override
+    public boolean get(int index) {
+        return flatMatrix[index];
+    }
+
+    @Override
     public boolean get(int i, int j) {
         return flatMatrix[i * cols + j];
     }
