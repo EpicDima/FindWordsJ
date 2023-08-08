@@ -167,14 +167,10 @@ public class DefaultSolver implements Solver {
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = new ArrayList<>();
                 for (WordAndMask wordAndMask : wordAndMasks) {
                     if (wordAndMask.mask().get(i, j)) {
-                        List<WordAndMask> list = matrix[i][j];
-                        if (list == null) {
-                            list = new ArrayList<>();
-                            matrix[i][j] = list;
-                        }
-                        list.add(wordAndMask);
+                        matrix[i][j].add(wordAndMask);
                     }
                 }
             }

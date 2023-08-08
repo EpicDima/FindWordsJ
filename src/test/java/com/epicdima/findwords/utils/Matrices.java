@@ -32,6 +32,18 @@ public final class Matrices {
             алла
             авар""";
 
+    public static final String MATRIX_10_X_10 = """
+            креплкшкпо
+            дисдеамауд
+            авлтунифшк
+            нсобмка  а
+            хтуочогинк
+            оллакмрасд
+            кодидоантв
+            иньлелкиое
+            огратьовлр
+            боевваннаь""";
+
     private Matrices() {
         throw new AssertionError("private constructor, bitch");
     }

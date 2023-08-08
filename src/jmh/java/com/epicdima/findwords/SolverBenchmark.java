@@ -93,17 +93,27 @@ public class SolverBenchmark {
     }
 
     @Benchmark
-    public void matrix8x8_4_100_fullMatch() {
-        solver.solve(MATRIX_8_X_8, 4, 100, true);
+    public void matrix8x8_1_100_fullMatch() {
+        solver.solve(MATRIX_8_X_8, 1, 100, true);
     }
 
     @Benchmark
-    public void matrix11x8_5_100_fullMatch() {
-        solver.solve(MATRIX_11_X_8, 5, 100, true);
+    public void matrix11x8_1_100_fullMatch() {
+        solver.solve(MATRIX_11_X_8, 1, 100, true);
     }
 
     @Benchmark
-    public void matrix19x4_4_10_fullMatch() {
-        solver.solve(MATRIX_19_X_4, 4, 10, true);
+    public void matrix19x4_1_100_fullMatch() {
+        solver.solve(MATRIX_19_X_4, 1, 100, true);
+    }
+
+    @Benchmark
+    public void matrix23x26_4_100_fullMatch() {
+        solver.solve(MATRIX_23_X_26, 4, 100, true);
+    }
+
+    @Benchmark
+    public void matrix10x10_3_100_fullMatch() {
+        solver.solve(MATRIX_10_X_10, 3, 100, true);
     }
 }
