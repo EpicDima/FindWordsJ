@@ -58,7 +58,7 @@ public abstract class SolverTest {
 
         solver.solve(text, 4, 100, false);
 
-        CharSequence[] correctWords = new CharSequence[]{"араб", "арго", "барий", "баул", "брег", "враг", "герб", "гербарий", "глад", "гладиатор", "гоми", "гора", "готовка", "гусар", "домысел", "досыл", "дружба", "дружба", "ивка", "игра", "кагор", "капо", "карп", "катушка", "кашка", "лоск", "лось", "лотус", "мотовка", "овраг", "опак", "оптом", "осушка", "подготовка", "проигрыш", "пуск", "пута", "пушка", "ракша", "рота", "скво", "слот", "соль", "сота", "соус", "суша", "сушка", "тарт", "ташка", "толь", "тоска", "туша", "тушка", "усол", "ушат", "ушка", "шато",};
+        CharSequence[] correctWords = new CharSequence[]{"араб", "арго", "барий", "баул", "брег", "враг", "герб", "гербарий", "глад", "гладиатор", "гоми", "гора", "готовка", "гусар", "домысел", "досыл", "дружба", "дружба", "ивка", "игра", "кагор", "капо", "карп", "катушка", "кашка", "лоск", "лось", "лотус", "мотовка", "овраг", "опак", "оптом", "осел", "осушка", "подготовка", "проигрыш", "пуск", "пута", "пушка", "ракша", "рота", "скво", "слот", "соль", "сота", "соус", "суша", "сушка", "тарт", "ташка", "толь", "тоска", "туша", "тушка", "усол", "ушат", "ушка", "шато"};
 
         List<CharSequence> words = solver.getWords()
                 .stream()
@@ -164,5 +164,28 @@ public abstract class SolverTest {
         for (int i = 0; i < correctFullMatchesList.size(); i++) {
             Assertions.assertEquals(correctFullMatchesList.get(i), fullMatches.get(i));
         }
+    }
+
+    @Test
+    public void test5() {
+        String text = Matrices.MATRIX_10_X_10;
+
+        solver.solve(text, 4, 100, true);
+
+        List<CharSequence> words = solver.getWords().stream().map(WordAndMask::word).collect(Collectors.toList());
+
+        List<CharSequence> fullMatches = solver.getFullMatches()
+                .stream()
+                .map(fullMatch -> fullMatch
+                        .stream()
+                        .map(WordAndMask::word)
+                        .sorted()
+                        .collect(Collectors.joining(" ")))
+                .sorted()
+                .collect(Collectors.toList());
+
+        Assertions.assertEquals(143, words.size());
+
+        Assertions.assertEquals(3, fullMatches.size());
     }
 }
