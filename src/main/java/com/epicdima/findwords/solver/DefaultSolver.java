@@ -201,7 +201,7 @@ public class DefaultSolver implements Solver {
                     result.add(positionWordAndMask);
                     f2(mask.or(positionWordAndMask.mask()), matrix, i + 1, result);
                     mask.xor(positionWordAndMask.mask());
-                    result.remove(positionWordAndMask);
+                    result.remove(result.size() - 1);
                 }
             }
             break;
