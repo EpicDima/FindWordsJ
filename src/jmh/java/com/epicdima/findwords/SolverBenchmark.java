@@ -54,7 +54,7 @@ public class SolverBenchmark {
             "VIRTUAL_MULTI_THREADED",
             "FORKJOIN",
             "COROUTINE",
-            "RECURSIVE_COROUTINE",
+            "DEEP_RECURSION",
     })
     public String solverTypeName;
 

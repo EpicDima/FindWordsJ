@@ -12,7 +12,7 @@ public enum SolverType {
     VIRTUAL_MULTI_THREADED(VirtualMultiThreadedSolver.class),
     FORKJOIN(ForkJoinSolver.class),
     COROUTINE(CoroutineSolver.class),
-    RECURSIVE_COROUTINE(RecursiveCoroutineSolver.class);
+    DEEP_RECURSION(DeepRecursionSolver.class);
 
     private final Class<? extends Solver> solverClass;
 
