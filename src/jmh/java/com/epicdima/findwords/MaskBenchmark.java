@@ -58,17 +58,32 @@ public class MaskBenchmark {
     }
 
     @Benchmark
-    public boolean getFirst() {
+    public boolean getFirst1() {
+        return mask.get(0);
+    }
+
+    @Benchmark
+    public boolean getFirst2() {
         return mask.get(0, 0);
     }
 
     @Benchmark
-    public boolean getMiddle() {
+    public boolean getMiddle1() {
+        return mask.get(middleIndex * size + middleIndex);
+    }
+
+    @Benchmark
+    public boolean getMiddle2() {
         return mask.get(middleIndex, middleIndex);
     }
 
     @Benchmark
-    public boolean getLast() {
+    public boolean getLast1() {
+        return mask.get(lastIndex * size + lastIndex);
+    }
+
+    @Benchmark
+    public boolean getLast2() {
         return mask.get(lastIndex, lastIndex);
     }
 

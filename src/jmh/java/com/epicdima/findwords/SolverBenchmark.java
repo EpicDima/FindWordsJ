@@ -1,5 +1,6 @@
 package com.epicdima.findwords;
 
+import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.solver.Solver;
 import com.epicdima.findwords.solver.SolverType;
 import com.epicdima.findwords.trie.WordTrie;
@@ -34,6 +35,13 @@ public class SolverBenchmark {
     private static final String LINES_SEPARATOR = "\n";
 
     @Param({
+            "BOOLEAN",
+            "FLAT",
+            "BITSET",
+    })
+    public String maskTypeName;
+
+    @Param({
             "HASH",
             "ARRAY",
             "SET",
@@ -42,10 +50,11 @@ public class SolverBenchmark {
 
     @Param({
             "DEFAULT",
-            "FAST",
-            "MULTITHREADED",
+            "MULTI_THREADED",
+            "VIRTUAL_MULTI_THREADED",
             "FORKJOIN",
             "COROUTINE",
+            "RECURSIVE_COROUTINE",
     })
     public String solverTypeName;
 
@@ -53,8 +62,9 @@ public class SolverBenchmark {
 
     @Setup
     public void setup() {
+        MaskType maskType = MaskType.valueOf(maskTypeName);
         WordTrie wordTrie = WordTrieType.valueOf(wordTrieTypeName).createInstance(BenchmarkUtils.DEFAULT_DICTIONARY);
-        solver = SolverType.valueOf(solverTypeName).createInstance(LINES_SEPARATOR, wordTrie);
+        solver = SolverType.valueOf(solverTypeName).createInstance(LINES_SEPARATOR, maskType, wordTrie);
     }
 
     @Benchmark
@@ -90,5 +100,10 @@ public class SolverBenchmark {
     @Benchmark
     public void matrix11x8_5_100_fullMatch() {
         solver.solve(MATRIX_11_X_8, 5, 100, true);
+    }
+
+    @Benchmark
+    public void matrix19x4_4_10_fullMatch() {
+        solver.solve(MATRIX_19_X_4, 4, 10, true);
     }
 }

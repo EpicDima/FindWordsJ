@@ -2,6 +2,8 @@ package com.epicdima.findwords.mask;
 
 public interface Mask {
 
+    boolean get(int index);
+
     boolean get(int i, int j);
 
     void set(int i, int j, boolean value);

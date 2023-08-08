@@ -1,23 +1,58 @@
 package com.epicdima.findwords.solver
 
+import com.epicdima.findwords.mask.Mask
+import com.epicdima.findwords.mask.MaskType
 import com.epicdima.findwords.trie.WordTrie
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
-class CoroutineSolver(linesSeparator: String, trie: WordTrie) : MultiThreadedSolver(linesSeparator, trie) {
+class CoroutineSolver(
+    linesSeparator: String,
+    maskType: MaskType,
+    wordTrie: WordTrie
+) : DefaultSolver(linesSeparator, maskType, wordTrie) {
 
     override fun ffff(matchedWords: List<WordAndMask>): Unit = runBlocking {
-        val masks = getRawMasks(matchedWords)
-        val minXY = getMinXAndMinY(masks)
+        val matrix = createWordAndMaskMatrix(matchedWords)
 
-        for (i in masks.indices) {
-            if (masks[i].get(minXY[0], minXY[1])) {
-                launch(Dispatchers.Default) {
-                    val indexes = BooleanArray(masks.size)
-                    indexes[i] = true
-                    f2(masks[i].copy().or(originalMask), indexes, 0, masks)
+        withContext(Dispatchers.Default) {
+            f22(originalMask.copy(), matrix, 0, ArrayList())
+        }
+    }
+
+    private suspend fun f22(
+        mask: Mask,
+        matrix: Array<Array<List<WordAndMask>>>,
+        startIndex: Int,
+        result: List<WordAndMask>
+    ) {
+        coroutineScope {
+            if (mask.isAllTrue()) {
+                fullMatches.add(result)
+                return@coroutineScope
+            }
+            for (i in startIndex until rows * cols) {
+                if (mask[i]) {
+                    continue
                 }
+                val jobs = mutableListOf<Job>()
+                for (positionWordAndMask in matrix[i / cols][i % cols]) {
+                    if (mask.notIntersects(positionWordAndMask.mask)) {
+                        jobs.add(launch(Dispatchers.Default) {
+                            val tempResult = mutableListOf<WordAndMask>()
+                            tempResult.addAll(result)
+                            tempResult.add(positionWordAndMask)
+                            f2(mask.copy().or(positionWordAndMask.mask), matrix, i + 1, tempResult)
+                        })
+                    }
+                }
+
+                jobs.forEach { it.join() }
+                break
             }
         }
     }

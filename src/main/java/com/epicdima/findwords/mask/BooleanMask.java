@@ -29,6 +29,11 @@ public class BooleanMask implements Mask {
     }
 
     @Override
+    public boolean get(int index) {
+        return matrix[index / cols][index % cols];
+    }
+
+    @Override
     public boolean get(int i, int j) {
         return matrix[i][j];
     }
