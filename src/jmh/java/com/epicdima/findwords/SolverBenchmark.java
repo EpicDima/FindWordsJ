@@ -28,8 +28,8 @@ import static com.epicdima.findwords.utils.Matrices.MATRIX_8_X_8;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1)
-@Warmup(iterations = 1, time = 8)
-@Measurement(iterations = 3, time = 8)
+@Warmup(iterations = 1, time = 4)
+@Measurement(iterations = 3, time = 4)
 @State(Scope.Benchmark)
 public class SolverBenchmark {
     private static final String LINES_SEPARATOR = "\n";
