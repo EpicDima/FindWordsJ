@@ -19,7 +19,7 @@ public class MultiThreadedSolver extends DefaultSolver {
     }
 
     @Override
-    protected void ffff(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
 
         threadPool = Executors.newCachedThreadPool();

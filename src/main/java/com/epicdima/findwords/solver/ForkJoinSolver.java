@@ -17,7 +17,7 @@ public class ForkJoinSolver extends MultiThreadedSolver {
     }
 
     @Override
-    protected void ffff(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
         forkJoinPool.submit(new F2Action(originalMask.copy(), matrix, 0, new ArrayList<>())).join();
     }

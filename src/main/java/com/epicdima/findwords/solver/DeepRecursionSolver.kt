@@ -9,7 +9,7 @@ class DeepRecursionSolver(
     wordTrie: WordTrie
 ) : DefaultSolver(linesSeparator, maskType, wordTrie) {
 
-    override fun ffff(matchedWords: List<WordAndMask>) {
+    override fun findFullMatches(matchedWords: List<WordAndMask>) {
         val matrix = createWordAndMaskMatrix(matchedWords)
         val mask = originalMask.copy()
         val result = mutableListOf<WordAndMask>()

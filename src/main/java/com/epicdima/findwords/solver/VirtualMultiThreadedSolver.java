@@ -13,7 +13,7 @@ public class VirtualMultiThreadedSolver extends MultiThreadedSolver {
     }
 
     @Override
-    protected void ffff(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
 
         threadPool = Executors.newVirtualThreadPerTaskExecutor();
