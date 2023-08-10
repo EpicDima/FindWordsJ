@@ -53,7 +53,7 @@ public class DefaultSolver implements Solver {
         }
 
         if (fullMatch) {
-            findFullMatches();
+            findFullMatches(words);
         }
     }
 
@@ -64,7 +64,18 @@ public class DefaultSolver implements Solver {
         String[] lines = matrixText.split(Pattern.quote(linesSeparator));
 
         rows = lines.length;
+        if (rows == 0) {
+            throw new IllegalArgumentException("No rows in entered text");
+        }
         cols = lines[0].length();
+        if (cols == 0) {
+            throw new IllegalArgumentException("No cols in entered text");
+        }
+        for (String line : lines) {
+            if (line.length() != cols) {
+                throw new IllegalArgumentException("The text is not a grid");
+            }
+        }
 
         matrix = new char[rows][cols];
         originalMask = createOriginalMask(rows, cols);
@@ -150,11 +161,7 @@ public class DefaultSolver implements Solver {
         }
     }
 
-    private void findFullMatches() {
-        ffff(words);
-    }
-
-    protected void ffff(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
         f2(originalMask.copy(), matrix, 0, new ArrayList<>());
     }

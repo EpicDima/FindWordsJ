@@ -16,7 +16,7 @@ class CoroutineSolver(
     wordTrie: WordTrie
 ) : DefaultSolver(linesSeparator, maskType, wordTrie) {
 
-    override fun ffff(matchedWords: List<WordAndMask>): Unit = runBlocking {
+    override fun findFullMatches(matchedWords: List<WordAndMask>): Unit = runBlocking {
         val matrix = createWordAndMaskMatrix(matchedWords)
 
         withContext(Dispatchers.Default) {
