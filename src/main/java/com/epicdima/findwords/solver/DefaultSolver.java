@@ -169,7 +169,7 @@ public class DefaultSolver implements Solver {
     protected List<WordAndMask>[][] createWordAndMaskMatrix(List<WordAndMask> matchedWords) {
         WordAndMask[] wordAndMasks = getRawMasks(matchedWords);
 
-        //noinspection unchecked
+        @SuppressWarnings("unchecked")
         List<WordAndMask>[][] matrix = new List[rows][cols];
 
         for (int i = 0; i < matrix.length; i++) {
@@ -208,7 +208,7 @@ public class DefaultSolver implements Solver {
                     result.add(positionWordAndMask);
                     f2(mask.or(positionWordAndMask.mask()), matrix, i + 1, result);
                     mask.xor(positionWordAndMask.mask());
-                    result.remove(result.size() - 1);
+                    result.removeLast();
                 }
             }
             break;

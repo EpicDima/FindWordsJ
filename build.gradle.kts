@@ -1,38 +1,26 @@
 plugins {
     java
-    kotlin("jvm") version "1.9.10"
-    id("me.champeau.jmh") version "0.7.1"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.jmh)
 }
 
 group = "com.epicdima.findwords"
 version = "1.0"
 
 repositories {
+    google()
     mavenCentral()
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.compilerArgs = listOf("--enable-preview", "--add-modules", "jdk.incubator.concurrent")
-}
-
-tasks.withType<JavaExec> {
-    jvmArgs = listOf("--enable-preview")
-}
-
-tasks.withType<Test> {
-    jvmArgs = listOf("--enable-preview")
-}
-
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation(libs.kotlinx.coroutines)
 
-    jmh("org.openjdk.jmh:jmh-core:1.36")
-    jmh("org.openjdk.jmh:jmh-generator-annprocess:1.36")
-    jmhAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.36")
+    jmh(libs.jmh.core)
+    jmh(libs.jmh.processor)
+    jmhAnnotationProcessor(libs.jmh.processor)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation(libs.jupiter.api)
+    testRuntimeOnly(libs.jupiter.engine)
 }
 
 tasks.getByName<Test>("test") {
