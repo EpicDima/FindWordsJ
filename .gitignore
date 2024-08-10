@@ -1,7 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,code-java,gradle,kotlin,android,androidstudio,intellij,intellij+all,intellij+iml
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,code-java,gradle,kotlin,android,androidstudio,intellij,intellij+all,intellij+iml
 
-/src/jmh/java/com/epicdima/findwords/RandomTestBenchmark.java
+/src/benchmark/java/com/epicdima/findwords/RandomTestBenchmark.java
 /src/test/java/com/epicdima/findwords/Main.java
 
 ### Android ###

@@ -1,7 +1,8 @@
 plugins {
     java
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.jmh)
+    alias(libs.plugins.kotlinx.benchmark)
+    alias(libs.plugins.kotlin.all.open)
 }
 
 group = "com.epicdima.findwords"
@@ -12,15 +13,31 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    create("benchmark") {
+        dependencies {
+            implementation(libs.kotlinx.benchmark)
+        }
+    }
+}
+
 dependencies {
     implementation(libs.kotlinx.coroutines)
 
-    jmh(libs.jmh.core)
-    jmh(libs.jmh.processor)
-    jmhAnnotationProcessor(libs.jmh.processor)
-
     testImplementation(libs.jupiter.api)
     testRuntimeOnly(libs.jupiter.engine)
+
+    add("benchmarkImplementation", sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath)
+}
+
+benchmark {
+    targets {
+        register("benchmark")
+    }
+}
+
+allOpen {
+    annotation("org.openjdk.jmh.annotations.State")
 }
 
 tasks.getByName<Test>("test") {
