@@ -20,14 +20,13 @@ class CoroutineSolver(
         val matrix = createWordAndMaskMatrix(matchedWords)
 
         withContext(Dispatchers.Default) {
-            f22(originalMask.copy(), matrix, 0, ArrayList())
+            f22(originalMask.copy(), matrix, ArrayList())
         }
     }
 
     private suspend fun f22(
         mask: Mask,
         matrix: Array<Array<List<WordAndMask>>>,
-        startIndex: Int,
         result: List<WordAndMask>
     ) {
         coroutineScope {
@@ -35,7 +34,7 @@ class CoroutineSolver(
                 fullMatches.add(result)
                 return@coroutineScope
             }
-            for (i in startIndex until rows * cols) {
+            for (i in 0..<rows * cols) {
                 if (mask[i]) {
                     continue
                 }

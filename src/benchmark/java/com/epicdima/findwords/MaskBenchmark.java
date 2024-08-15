@@ -2,7 +2,6 @@ package com.epicdima.findwords;
 
 import com.epicdima.findwords.mask.Mask;
 import com.epicdima.findwords.mask.MaskType;
-import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -14,7 +13,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused") // used because the benchmark
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
@@ -40,7 +41,7 @@ public class MaskBenchmark {
     private Mask mask2;
 
     @Setup
-    public void setup() throws Throwable {
+    public void setup() {
         middleIndex = size / 2;
         lastIndex = size - 1;
 

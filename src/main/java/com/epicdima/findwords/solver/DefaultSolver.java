@@ -1,5 +1,6 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.Mask;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrie;
@@ -12,11 +13,16 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class DefaultSolver implements Solver {
+    @NonNull
     private final List<WordAndMask> words = new ArrayList<>();
+    @NonNull
     protected final List<List<WordAndMask>> fullMatches = Collections.synchronizedList(new ArrayList<>());
 
+    @NonNull
     private final String linesSeparator;
+    @NonNull
     private final MaskType maskType;
+    @NonNull
     private final WordTrie wordTrie;
 
     private int minWordLength;
@@ -25,21 +31,25 @@ public class DefaultSolver implements Solver {
     protected int rows;
     protected int cols;
 
-    private char[][] matrix;
+    @NonNull
+    private char[][] matrix = new char[0][0];
+    @NonNull
     protected Mask originalMask;
 
-    public DefaultSolver(String linesSeparator, MaskType maskType, WordTrie wordTrie) {
+    public DefaultSolver(@NonNull String linesSeparator, @NonNull MaskType maskType, @NonNull WordTrie wordTrie) {
         this.linesSeparator = linesSeparator;
         this.maskType = maskType;
         this.wordTrie = wordTrie;
+        this.originalMask = createOriginalMask(0, 0);
     }
 
+    @NonNull
     private Mask createOriginalMask(int rows, int cols) {
         return maskType.createInstance(rows, cols);
     }
 
     @Override
-    public void solve(String matrixText, int minWordLength, int maxWordLength, boolean fullMatch) {
+    public void solve(@NonNull String matrixText, int minWordLength, int maxWordLength, boolean fullMatch) {
         preSolve(matrixText, minWordLength, maxWordLength);
 
         words.addAll(findWords());
@@ -57,7 +67,7 @@ public class DefaultSolver implements Solver {
         }
     }
 
-    private void preSolve(String matrixText, int minWordLength, int maxWordLength) {
+    private void preSolve(@NonNull String matrixText, int minWordLength, int maxWordLength) {
         this.minWordLength = minWordLength;
         this.maxWordLength = maxWordLength;
 
@@ -92,16 +102,19 @@ public class DefaultSolver implements Solver {
         }
     }
 
+    @NonNull
     @Override
     public List<WordAndMask> getWords() {
         return new ArrayList<>(words);
     }
 
+    @NonNull
     @Override
     public List<List<WordAndMask>> getFullMatches() {
         return new ArrayList<>(fullMatches);
     }
 
+    @NonNull
     private Set<WordAndMask> findWords() {
         Set<WordAndMask> wordsAndMasks = new HashSet<>();
 
@@ -119,7 +132,7 @@ public class DefaultSolver implements Solver {
     }
 
     @SuppressWarnings("DuplicatedCode")
-    private void f(String word, int x, int y, Mask mask, Set<WordAndMask> wordsAndMasks) {
+    private void f(@NonNull String word, int x, int y, @NonNull Mask mask, @NonNull Set<WordAndMask> wordsAndMasks) {
         if (word.length() >= minWordLength && wordTrie.containsWord(word)) {
             wordsAndMasks.add(new WordAndMask(word, mask.copy()));
         }
@@ -161,12 +174,13 @@ public class DefaultSolver implements Solver {
         }
     }
 
-    protected void findFullMatches(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(@NonNull List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
         f2(originalMask.copy(), matrix, 0, new ArrayList<>());
     }
 
-    protected List<WordAndMask>[][] createWordAndMaskMatrix(List<WordAndMask> matchedWords) {
+    @NonNull
+    protected List<WordAndMask>[][] createWordAndMaskMatrix(@NonNull List<WordAndMask> matchedWords) {
         WordAndMask[] wordAndMasks = getRawMasks(matchedWords);
 
         @SuppressWarnings("unchecked")
@@ -186,14 +200,15 @@ public class DefaultSolver implements Solver {
         return matrix;
     }
 
-    private WordAndMask[] getRawMasks(List<WordAndMask> matchedWords) {
+    @NonNull
+    private WordAndMask[] getRawMasks(@NonNull List<WordAndMask> matchedWords) {
         Mask invertedOriginalMask = originalMask.copy().invert();
         return matchedWords.stream()
                 .map(matchedWord -> new WordAndMask(matchedWord.word(), matchedWord.mask().copy().and(invertedOriginalMask)))
                 .toArray(WordAndMask[]::new);
     }
 
-    protected void f2(Mask mask, List<WordAndMask>[][] matrix, int startIndex, List<WordAndMask> result) {
+    protected void f2(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, int startIndex, @NonNull List<WordAndMask> result) {
         if (mask.isAllTrue()) {
             fullMatches.add(new ArrayList<>(result));
             return;

@@ -1,10 +1,13 @@
 package com.epicdima.findwords.utils;
 
-public class TestUtils {
+import androidx.annotation.NonNull;
 
+public final class TestUtils {
+
+    @NonNull
     public static final String DEFAULT_DICTIONARY = "src/main/resources/dictionary.txt";
 
     private TestUtils() {
-        throw new AssertionError("private constructor, bitch");
+        throw new AssertionError("Private constructor");
     }
 }

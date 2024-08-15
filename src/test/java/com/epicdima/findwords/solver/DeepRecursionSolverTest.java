@@ -1,10 +1,12 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrieType;
 
-public class DeepRecursionSolverTest extends SolverTest {
+public final class DeepRecursionSolverTest extends SolverTest {
 
+    @NonNull
     @Override
     protected Solver createSolver() {
         return SolverType.DEEP_RECURSION.createInstance(

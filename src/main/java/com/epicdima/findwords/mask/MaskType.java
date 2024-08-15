@@ -1,5 +1,6 @@
 package com.epicdima.findwords.mask;
 
+import androidx.annotation.NonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -9,11 +10,13 @@ public enum MaskType {
     FLAT(FlatBooleanMask.class),
     BITSET(BitSetMask.class);
 
+    @NonNull
     private final Class<? extends Mask> maskClass;
 
+    @NonNull
     private final MethodHandle createInstanceMH;
 
-    MaskType(Class<? extends Mask> maskClass) {
+    MaskType(@NonNull Class<? extends Mask> maskClass) {
         this.maskClass = maskClass;
         try {
             createInstanceMH = MethodHandles.publicLookup()
@@ -23,7 +26,8 @@ public enum MaskType {
         }
     }
 
-    public Mask createInstance(int rows, int cols) {
+    @NonNull
+    public final Mask createInstance(int rows, int cols) {
         try {
             return (Mask) createInstanceMH.invoke(rows, cols);
         } catch (Throwable throwable) {
@@ -31,7 +35,8 @@ public enum MaskType {
         }
     }
 
-    public Class<? extends Mask> getMaskClass() {
+    @NonNull
+    public final Class<? extends Mask> getMaskClass() {
         return maskClass;
     }
 }

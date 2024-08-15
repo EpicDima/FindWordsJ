@@ -1,11 +1,14 @@
 package com.epicdima.findwords.utils;
 
-public final class Utils {
-    public static final char BLOCKED = ' ';
+import androidx.annotation.NonNull;
 
+public final class Utils {
+    public static final int BLOCKED = ' ';
+
+    @NonNull
     public static final String DEFAULT_DICTIONARY = "/dictionary.txt";
 
     private Utils() {
-        throw new AssertionError("private constructor, bitch");
+        throw new AssertionError("Private constructor");
     }
 }

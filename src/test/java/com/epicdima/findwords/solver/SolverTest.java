@@ -1,23 +1,28 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.utils.Matrices;
 import com.epicdima.findwords.utils.TestUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 public abstract class SolverTest {
+    @NonNull
     protected final String dictionaryPath = TestUtils.DEFAULT_DICTIONARY;
+    @NonNull
     protected final String linesSeparator = "\n";
 
+    @NonNull
     private final Solver solver = createSolver();
 
+    @NonNull
     protected abstract Solver createSolver();
 
     @Test
-    public void test1() {
+    public final void test1() {
         String text = "при\nтев\nдуб";
 
         solver.solve(text, 1, 10, false);
@@ -29,7 +34,7 @@ public abstract class SolverTest {
     }
 
     @Test
-    public void test11() {
+    public final void test11() {
         String text = "при\nтев\nдуб";
 
         solver.solve(text, 3, 6, true);
@@ -53,7 +58,7 @@ public abstract class SolverTest {
     }
 
     @Test
-    public void test2() {
+    public final void test2() {
         String text = Matrices.MATRIX_8_X_8;
 
         solver.solve(text, 4, 100, false);
@@ -74,7 +79,7 @@ public abstract class SolverTest {
     }
 
     @Test
-    public void test3() {
+    public final void test3() {
         String text = Matrices.MATRIX_8_X_8;
 
         solver.solve(text, 4, 100, true);
@@ -110,7 +115,7 @@ public abstract class SolverTest {
     }
 
     @Test
-    public void test4() {
+    public final void test4() {
         String text = Matrices.MATRIX_19_X_4;
 
         solver.solve(text, 4, 10, true);
@@ -167,7 +172,7 @@ public abstract class SolverTest {
     }
 
     @Test
-    public void test5() {
+    public final void test5() {
         String text = Matrices.MATRIX_10_X_10;
 
         solver.solve(text, 4, 100, true);

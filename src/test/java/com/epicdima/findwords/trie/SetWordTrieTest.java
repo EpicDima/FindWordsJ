@@ -1,7 +1,10 @@
 package com.epicdima.findwords.trie;
 
-public class SetWordTrieTest extends TrieTest {
+import androidx.annotation.NonNull;
 
+public final class SetWordTrieTest extends TrieTest {
+
+    @NonNull
     @Override
     protected WordTrie createWordTrie() {
         return WordTrieType.SET.createInstance(dictionaryPath);

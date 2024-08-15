@@ -83,6 +83,6 @@ public final class Matrices {
             кусокани""";
 
     private Matrices() {
-        throw new AssertionError("private constructor, bitch");
+        throw new AssertionError("Private constructor");
     }
 }

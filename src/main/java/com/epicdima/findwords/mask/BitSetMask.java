@@ -1,15 +1,17 @@
 package com.epicdima.findwords.mask;
 
+import androidx.annotation.NonNull;
 import java.util.BitSet;
 
-public class BitSetMask implements Mask {
+public final class BitSetMask implements Mask {
     private final int rows;
     private final int cols;
     private final int size;
 
+    @NonNull
     private final BitSet bitSet;
 
-    private BitSetMask(int rows, int cols, int size, BitSet bitSet) {
+    private BitSetMask(int rows, int cols, int size, @NonNull BitSet bitSet) {
         this.rows = rows;
         this.cols = cols;
         this.size = size;
@@ -20,7 +22,7 @@ public class BitSetMask implements Mask {
         this(rows, cols, size, new BitSet(size));
     }
 
-    @SuppressWarnings("unused") // used through MethodHandle
+    @SuppressWarnings("unused") // used via MethodHandle
     public BitSetMask(int rows, int cols) {
         this(rows, cols, rows * cols);
     }
@@ -40,6 +42,7 @@ public class BitSetMask implements Mask {
         bitSet.set(i * cols + j, value);
     }
 
+    @NonNull
     @Override
     public Mask copy() {
         return new BitSetMask(rows, cols, size, (BitSet) bitSet.clone());
@@ -55,24 +58,28 @@ public class BitSetMask implements Mask {
         return bitSet.isEmpty();
     }
 
+    @NonNull
     @Override
-    public Mask and(Mask another) {
+    public Mask and(@NonNull Mask another) {
         bitSet.and(((BitSetMask) another).bitSet);
         return this;
     }
 
+    @NonNull
     @Override
-    public Mask or(Mask another) {
+    public Mask or(@NonNull Mask another) {
         bitSet.or(((BitSetMask) another).bitSet);
         return this;
     }
 
+    @NonNull
     @Override
-    public Mask xor(Mask another) {
+    public Mask xor(@NonNull Mask another) {
         bitSet.xor(((BitSetMask) another).bitSet);
         return this;
     }
 
+    @NonNull
     @Override
     public Mask invert() {
         bitSet.flip(0, size);
@@ -80,7 +87,7 @@ public class BitSetMask implements Mask {
     }
 
     @Override
-    public boolean notIntersects(Mask another) {
+    public boolean notIntersects(@NonNull Mask another) {
         return !bitSet.intersects(((BitSetMask) another).bitSet);
     }
 

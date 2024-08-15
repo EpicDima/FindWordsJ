@@ -1,6 +1,9 @@
 package com.epicdima.findwords.trie;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.utils.TestUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,15 +11,16 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 public abstract class TrieTest {
+    @NonNull
     protected final String dictionaryPath = TestUtils.DEFAULT_DICTIONARY;
 
+    @NonNull
     protected abstract WordTrie createWordTrie();
 
-    protected List<String> readDictionary() {
+    @NonNull
+    protected final List<String> readDictionary() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictionaryPath), StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.toList());
         } catch (IOException e) {
@@ -25,7 +29,7 @@ public abstract class TrieTest {
     }
 
     @Test
-    void containsSubstring() {
+    public final void containsSubstring() {
         WordTrie trie = createWordTrie();
 
         Assertions.assertTrue(trie.containsSubstring("п"));
@@ -39,7 +43,7 @@ public abstract class TrieTest {
     }
 
     @Test
-    void containsSubstringAll() {
+    public final void containsSubstringAll() {
         WordTrie trie = createWordTrie();
 
         List<String> words = readDictionary();
@@ -47,14 +51,14 @@ public abstract class TrieTest {
         for (String word : words) {
             for (int i = 1; i < word.length(); i++) {
                 Assertions.assertTrue(trie.containsSubstring(word.substring(0, i)));
-                Assertions.assertFalse(trie.containsSubstring(word + word + word)); // на двух ошибка
+                Assertions.assertFalse(trie.containsSubstring(word + word + word)); // there is mistake on two (there are two-word words)
                 Assertions.assertFalse(trie.containsSubstring(word + word + word + word));
             }
         }
     }
 
     @Test
-    void containsWord() {
+    public final void containsWord() {
         WordTrie trie = createWordTrie();
 
         Assertions.assertFalse(trie.containsWord("п"));
@@ -68,7 +72,7 @@ public abstract class TrieTest {
     }
 
     @Test
-    void containsWordAll() {
+    public final void containsWordAll() {
         WordTrie trie = createWordTrie();
 
         List<String> words = readDictionary();

@@ -2,7 +2,6 @@ plugins {
     java
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinx.benchmark)
-    alias(libs.plugins.kotlin.all.open)
 }
 
 group = "com.epicdima.findwords"
@@ -24,6 +23,8 @@ sourceSets {
 dependencies {
     implementation(libs.kotlinx.coroutines)
 
+    implementation(libs.androidx.annotation)
+
     testImplementation(libs.jupiter.api)
     testRuntimeOnly(libs.jupiter.engine)
 
@@ -34,10 +35,6 @@ benchmark {
     targets {
         register("benchmark")
     }
-}
-
-allOpen {
-    annotation("org.openjdk.jmh.annotations.State")
 }
 
 tasks.getByName<Test>("test") {

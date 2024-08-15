@@ -6,7 +6,6 @@ import com.epicdima.findwords.solver.SolverType;
 import com.epicdima.findwords.trie.WordTrie;
 import com.epicdima.findwords.trie.WordTrieType;
 import com.epicdima.findwords.utils.BenchmarkUtils;
-import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -18,13 +17,14 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
-
+import java.util.concurrent.TimeUnit;
 import static com.epicdima.findwords.utils.Matrices.MATRIX_10_X_10;
 import static com.epicdima.findwords.utils.Matrices.MATRIX_11_X_8;
 import static com.epicdima.findwords.utils.Matrices.MATRIX_19_X_4;
 import static com.epicdima.findwords.utils.Matrices.MATRIX_23_X_26;
 import static com.epicdima.findwords.utils.Matrices.MATRIX_8_X_8;
 
+@SuppressWarnings("unused") // used because the benchmark
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1)

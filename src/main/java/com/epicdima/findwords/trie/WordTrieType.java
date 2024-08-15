@@ -1,5 +1,7 @@
 package com.epicdima.findwords.trie;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -10,12 +12,16 @@ public enum WordTrieType {
     ARRAY(ArrayWordTrie.class),
     SET(SetWordTrie.class);
 
+    @NonNull
     private final Class<? extends WordTrie> wordTrieClass;
 
+    @NonNull
     private final MethodHandle createInstanceInputStreamMH;
+
+    @NonNull
     private final MethodHandle createInstanceStringMH;
 
-    WordTrieType(Class<? extends WordTrie> wordTrieClass) {
+    WordTrieType(@NonNull Class<? extends WordTrie> wordTrieClass) {
         this.wordTrieClass = wordTrieClass;
         try {
             createInstanceInputStreamMH = MethodHandles.publicLookup()
@@ -27,7 +33,8 @@ public enum WordTrieType {
         }
     }
 
-    public WordTrie createInstance(InputStream inputStream) {
+    @NonNull
+    public final WordTrie createInstance(@Nullable InputStream inputStream) {
         try {
             return (WordTrie) createInstanceInputStreamMH.invoke(inputStream);
         } catch (Throwable throwable) {
@@ -35,7 +42,8 @@ public enum WordTrieType {
         }
     }
 
-    public WordTrie createInstance(String dictionaryPath) {
+    @NonNull
+    public final WordTrie createInstance(@NonNull String dictionaryPath) {
         try {
             return (WordTrie) createInstanceStringMH.invoke(dictionaryPath);
         } catch (Throwable throwable) {
@@ -43,7 +51,8 @@ public enum WordTrieType {
         }
     }
 
-    public Class<? extends WordTrie> getWordTrieClass() {
+    @NonNull
+    public final Class<? extends WordTrie> getWordTrieClass() {
         return wordTrieClass;
     }
 }

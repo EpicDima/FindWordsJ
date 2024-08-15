@@ -1,20 +1,22 @@
 package com.epicdima.findwords.mask;
 
+import androidx.annotation.NonNull;
 import java.util.Arrays;
 
-public class BooleanMask implements Mask {
+public final class BooleanMask implements Mask {
     private final int rows;
     private final int cols;
 
+    @NonNull
     private final boolean[][] matrix;
 
-    private BooleanMask(int rows, int cols, boolean[][] matrix) {
+    private BooleanMask(int rows, int cols, @NonNull boolean[][] matrix) {
         this.rows = rows;
         this.cols = cols;
         this.matrix = matrix;
     }
 
-    @SuppressWarnings("unused") // used through MethodHandle
+    @SuppressWarnings("unused") // used via MethodHandle
     public BooleanMask(int rows, int cols) {
         this(rows, cols, new boolean[rows][cols]);
     }
@@ -43,6 +45,7 @@ public class BooleanMask implements Mask {
         matrix[i][j] = value;
     }
 
+    @NonNull
     @Override
     public Mask copy() {
         return new BooleanMask(rows, cols, deepCopy(matrix));
@@ -74,8 +77,9 @@ public class BooleanMask implements Mask {
         return true;
     }
 
+    @NonNull
     @Override
-    public Mask and(Mask another) {
+    public Mask and(@NonNull Mask another) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 matrix[i][j] &= another.get(i, j);
@@ -85,8 +89,9 @@ public class BooleanMask implements Mask {
         return this;
     }
 
+    @NonNull
     @Override
-    public Mask or(Mask another) {
+    public Mask or(@NonNull Mask another) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 matrix[i][j] |= another.get(i, j);
@@ -96,8 +101,9 @@ public class BooleanMask implements Mask {
         return this;
     }
 
+    @NonNull
     @Override
-    public Mask xor(Mask another) {
+    public Mask xor(@NonNull Mask another) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 matrix[i][j] ^= another.get(i, j);
@@ -107,6 +113,7 @@ public class BooleanMask implements Mask {
         return this;
     }
 
+    @NonNull
     @Override
     public Mask invert() {
         for (boolean[] array : matrix) {
@@ -119,7 +126,7 @@ public class BooleanMask implements Mask {
     }
 
     @Override
-    public boolean notIntersects(Mask another) {
+    public boolean notIntersects(@NonNull Mask another) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (matrix[i][j] && another.get(i, j)) {

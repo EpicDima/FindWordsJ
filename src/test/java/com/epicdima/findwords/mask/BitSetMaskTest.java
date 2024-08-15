@@ -1,7 +1,10 @@
 package com.epicdima.findwords.mask;
 
-public class BitSetMaskTest extends MaskTest {
+import androidx.annotation.NonNull;
 
+public final class BitSetMaskTest extends MaskTest {
+
+    @NonNull
     @Override
     protected Mask createMask() {
         return MaskType.BITSET.createInstance(rows, cols);

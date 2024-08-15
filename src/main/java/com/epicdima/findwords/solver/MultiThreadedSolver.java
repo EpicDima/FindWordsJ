@@ -1,5 +1,7 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.epicdima.findwords.mask.Mask;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrie;
@@ -11,15 +13,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class MultiThreadedSolver extends DefaultSolver {
+    @Nullable
+    protected ExecutorService threadPool = null;
 
-    protected ExecutorService threadPool;
-
-    public MultiThreadedSolver(String linesSeparator, MaskType maskType, WordTrie wordTrie) {
+    public MultiThreadedSolver(@NonNull String linesSeparator, @NonNull MaskType maskType, @NonNull WordTrie wordTrie) {
         super(linesSeparator, maskType, wordTrie);
     }
 
     @Override
-    protected void findFullMatches(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(@NonNull List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
 
         threadPool = Executors.newCachedThreadPool();
@@ -31,7 +33,7 @@ public class MultiThreadedSolver extends DefaultSolver {
     }
 
     @Override
-    protected void f2(Mask mask, List<WordAndMask>[][] matrix, int startIndex, List<WordAndMask> result) {
+    protected void f2(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, int startIndex, @NonNull List<WordAndMask> result) {
         if (mask.isAllTrue()) {
             fullMatches.add(result);
             return;
@@ -45,13 +47,15 @@ public class MultiThreadedSolver extends DefaultSolver {
 
             for (WordAndMask positionWordAndMask : matrix[i / cols][i % cols]) {
                 if (mask.notIntersects(positionWordAndMask.mask())) {
-                    final int finalI = i;
-                    futures.add(threadPool.submit(() -> {
-                        List<WordAndMask> tempResult = new ArrayList<>(result.size() + 1);
-                        tempResult.addAll(result);
-                        tempResult.add(positionWordAndMask);
-                        f2(mask.copy().or(positionWordAndMask.mask()), matrix, finalI + 1, tempResult);
-                    }));
+                    if (threadPool != null) {
+                        final int finalI = i;
+                        futures.add(threadPool.submit(() -> {
+                            List<WordAndMask> tempResult = new ArrayList<>(result.size() + 1);
+                            tempResult.addAll(result);
+                            tempResult.add(positionWordAndMask);
+                            f2(mask.copy().or(positionWordAndMask.mask()), matrix, finalI + 1, tempResult);
+                        }));
+                    }
                 }
             }
 

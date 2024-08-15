@@ -1,5 +1,6 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.Mask;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrie;
@@ -9,26 +10,30 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-public class ForkJoinSolver extends MultiThreadedSolver {
+public final class ForkJoinSolver extends MultiThreadedSolver {
+    @NonNull
     private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
 
-    public ForkJoinSolver(String linesSeparator, MaskType maskType, WordTrie wordTrie) {
+    public ForkJoinSolver(@NonNull String linesSeparator, @NonNull MaskType maskType, @NonNull WordTrie wordTrie) {
         super(linesSeparator, maskType, wordTrie);
     }
 
     @Override
-    protected void findFullMatches(List<WordAndMask> matchedWords) {
+    protected void findFullMatches(@NonNull List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
         forkJoinPool.submit(new F2Action(originalMask.copy(), matrix, 0, new ArrayList<>())).join();
     }
 
     private class F2Action extends RecursiveAction {
+        @NonNull
         private final Mask mask;
+        @NonNull
         private final List<WordAndMask>[][] matrix;
         private final int startIndex;
+        @NonNull
         private final List<WordAndMask> result;
 
-        public F2Action(Mask mask, List<WordAndMask>[][] matrix, int startIndex, List<WordAndMask> result) {
+        public F2Action(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, int startIndex, @NonNull List<WordAndMask> result) {
             this.mask = mask;
             this.matrix = matrix;
             this.startIndex = startIndex;

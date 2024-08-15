@@ -1,5 +1,6 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrie;
 import java.lang.invoke.MethodHandle;
@@ -14,11 +15,13 @@ public enum SolverType {
     COROUTINE(CoroutineSolver.class),
     DEEP_RECURSION(DeepRecursionSolver.class);
 
+    @NonNull
     private final Class<? extends Solver> solverClass;
 
+    @NonNull
     private final MethodHandle createInstanceMH;
 
-    SolverType(Class<? extends Solver> solverClass) {
+    SolverType(@NonNull Class<? extends Solver> solverClass) {
         this.solverClass = solverClass;
         try {
             createInstanceMH = MethodHandles.publicLookup()
@@ -28,7 +31,8 @@ public enum SolverType {
         }
     }
 
-    public Solver createInstance(String linesSeparator, MaskType maskType, WordTrie wordTrie) {
+    @NonNull
+    public final Solver createInstance(@NonNull String linesSeparator, @NonNull MaskType maskType, @NonNull WordTrie wordTrie) {
         try {
             return (Solver) createInstanceMH.invoke(linesSeparator, maskType, wordTrie);
         } catch (Throwable throwable) {
@@ -36,7 +40,8 @@ public enum SolverType {
         }
     }
 
-    public Class<? extends Solver> getSolverClass() {
+    @NonNull
+    public final Class<? extends Solver> getSolverClass() {
         return solverClass;
     }
 }

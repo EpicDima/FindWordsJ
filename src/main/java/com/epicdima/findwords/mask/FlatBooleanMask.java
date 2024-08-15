@@ -1,15 +1,17 @@
 package com.epicdima.findwords.mask;
 
+import androidx.annotation.NonNull;
 import java.util.Arrays;
 
-public class FlatBooleanMask implements Mask {
+public final class FlatBooleanMask implements Mask {
     private final int rows;
     private final int cols;
     private final int size;
 
+    @NonNull
     private final boolean[] flatMatrix;
 
-    private FlatBooleanMask(int rows, int cols, int size, boolean[] flatMatrix) {
+    private FlatBooleanMask(int rows, int cols, int size, @NonNull boolean[] flatMatrix) {
         this.rows = rows;
         this.cols = cols;
         this.size = size;
@@ -20,7 +22,7 @@ public class FlatBooleanMask implements Mask {
         this(rows, cols, size, new boolean[size]);
     }
 
-    @SuppressWarnings("unused") // used through MethodHandle
+    @SuppressWarnings("unused") // used via MethodHandle
     public FlatBooleanMask(int rows, int cols) {
         this(rows, cols, rows * cols);
     }
@@ -40,6 +42,7 @@ public class FlatBooleanMask implements Mask {
         flatMatrix[i * cols + j] = value;
     }
 
+    @NonNull
     @Override
     public Mask copy() {
         return new FlatBooleanMask(rows, cols, size, Arrays.copyOf(flatMatrix, size));
@@ -67,8 +70,9 @@ public class FlatBooleanMask implements Mask {
         return true;
     }
 
+    @NonNull
     @Override
-    public Mask and(Mask another) {
+    public Mask and(@NonNull Mask another) {
         for (int i = 0; i < size; i++) {
             flatMatrix[i] &= ((FlatBooleanMask) another).flatMatrix[i];
         }
@@ -76,8 +80,9 @@ public class FlatBooleanMask implements Mask {
         return this;
     }
 
+    @NonNull
     @Override
-    public Mask or(Mask another) {
+    public Mask or(@NonNull Mask another) {
         for (int i = 0; i < size; i++) {
             flatMatrix[i] |= ((FlatBooleanMask) another).flatMatrix[i];
         }
@@ -85,8 +90,9 @@ public class FlatBooleanMask implements Mask {
         return this;
     }
 
+    @NonNull
     @Override
-    public Mask xor(Mask another) {
+    public Mask xor(@NonNull Mask another) {
         for (int i = 0; i < size; i++) {
             flatMatrix[i] ^= ((FlatBooleanMask) another).flatMatrix[i];
         }
@@ -94,6 +100,7 @@ public class FlatBooleanMask implements Mask {
         return this;
     }
 
+    @NonNull
     @Override
     public Mask invert() {
         for (int i = 0; i < size; i++) {
@@ -104,7 +111,7 @@ public class FlatBooleanMask implements Mask {
     }
 
     @Override
-    public boolean notIntersects(Mask another) {
+    public boolean notIntersects(@NonNull Mask another) {
         for (int i = 0; i < size; i++) {
             if (flatMatrix[i] && ((FlatBooleanMask) another).flatMatrix[i]) {
                 return false;

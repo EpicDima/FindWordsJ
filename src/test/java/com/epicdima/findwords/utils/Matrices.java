@@ -1,6 +1,9 @@
 package com.epicdima.findwords.utils;
 
+import androidx.annotation.NonNull;
+
 public final class Matrices {
+    @NonNull
     public static final String MATRIX_8_X_8 = """
             лгдосежб
             адимылуа
@@ -11,6 +14,7 @@ public final class Matrices {
             баорпутг
             регакшак""";
 
+    @NonNull
     public static final String MATRIX_19_X_4 = """
             ласт
             ласа
@@ -32,6 +36,7 @@ public final class Matrices {
             алла
             авар""";
 
+    @NonNull
     public static final String MATRIX_10_X_10 = """
             креплкшкпо
             дисдеамауд
@@ -45,6 +50,6 @@ public final class Matrices {
             боевваннаь""";
 
     private Matrices() {
-        throw new AssertionError("private constructor, bitch");
+        throw new AssertionError("Private constructor");
     }
 }

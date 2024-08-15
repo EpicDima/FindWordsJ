@@ -1,5 +1,6 @@
 package com.epicdima.findwords;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.solver.Solver;
 import com.epicdima.findwords.solver.SolverType;
@@ -12,16 +13,16 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Runner {
+public final class Runner {
 
-    public static void main(String[] args) {
+    public static void main(@NonNull String[] args) {
         List<ConsoleEnumType<MaskType>> consoleMaskTypes = getConsoleMaskTypes();
         List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes = getConsoleWordTrieTypes();
         List<ConsoleEnumType<SolverType>> consoleSolverTypes = getConsoleSolverTypes();
 
-        String defaultMaskTypeKey = consoleMaskTypes.get(0).getConsoleKey();
-        String defaultWordTrieKey = consoleWordTrieTypes.get(0).getConsoleKey();
-        String defaultSolverKey = consoleSolverTypes.get(0).getConsoleKey();
+        String defaultMaskTypeKey = consoleMaskTypes.getFirst().getConsoleKey();
+        String defaultWordTrieKey = consoleWordTrieTypes.getFirst().getConsoleKey();
+        String defaultSolverKey = consoleSolverTypes.getFirst().getConsoleKey();
 
         if (args.length == 0) {
             printHelp(consoleMaskTypes, consoleWordTrieTypes, consoleSolverTypes, defaultMaskTypeKey, defaultWordTrieKey, defaultSolverKey);
@@ -40,12 +41,12 @@ public class Runner {
     }
 
     private static void printHelp(
-            List<ConsoleEnumType<MaskType>> consoleMaskTypes,
-            List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes,
-            List<ConsoleEnumType<SolverType>> consoleSolverTypes,
-            String defaultMaskTypeKey,
-            String defaultWordTrieKey,
-            String defaultSolverKey
+            @NonNull List<ConsoleEnumType<MaskType>> consoleMaskTypes,
+            @NonNull List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes,
+            @NonNull List<ConsoleEnumType<SolverType>> consoleSolverTypes,
+            @NonNull String defaultMaskTypeKey,
+            @NonNull String defaultWordTrieKey,
+            @NonNull String defaultSolverKey
     ) {
         System.out.println("The first required argument is text. A space is a character where there cannot be a letter.");
         System.out.println("-fm  boolean         - to find the full combination                        (default = false)");
@@ -62,7 +63,7 @@ public class Runner {
         System.out.println();
     }
 
-    private static void printResult(Solver solver) {
+    private static void printResult(@NonNull Solver solver) {
         System.out.println(System.lineSeparator());
         System.out.println("Found words:");
         System.out.println(solver.getWords()
@@ -85,15 +86,18 @@ public class Runner {
         }
     }
 
+    @NonNull
     private static List<ConsoleEnumType<MaskType>> getConsoleMaskTypes() {
         return Arrays.stream(MaskType.values())
                 .map((wordTrieType) -> new ConsoleEnumType<MaskType>() {
 
+                    @NonNull
                     @Override
                     public MaskType getEnumType() {
                         return wordTrieType;
                     }
 
+                    @NonNull
                     @Override
                     public String getTypeClassName() {
                         return wordTrieType.getMaskClass().getSimpleName();
@@ -102,15 +106,18 @@ public class Runner {
                 .collect(Collectors.toList());
     }
 
+    @NonNull
     private static List<ConsoleEnumType<WordTrieType>> getConsoleWordTrieTypes() {
         return Arrays.stream(WordTrieType.values())
                 .map((wordTrieType) -> new ConsoleEnumType<WordTrieType>() {
 
+                    @NonNull
                     @Override
                     public WordTrieType getEnumType() {
                         return wordTrieType;
                     }
 
+                    @NonNull
                     @Override
                     public String getTypeClassName() {
                         return wordTrieType.getWordTrieClass().getSimpleName();
@@ -119,15 +126,18 @@ public class Runner {
                 .collect(Collectors.toList());
     }
 
+    @NonNull
     private static List<ConsoleEnumType<SolverType>> getConsoleSolverTypes() {
         return Arrays.stream(SolverType.values())
                 .map((solverType) -> new ConsoleEnumType<SolverType>() {
 
+                    @NonNull
                     @Override
                     public SolverType getEnumType() {
                         return solverType;
                     }
 
+                    @NonNull
                     @Override
                     public String getTypeClassName() {
                         return solverType.getSolverClass().getSimpleName();
@@ -137,9 +147,10 @@ public class Runner {
 
     }
 
+    @NonNull
     private static MaskType createMaskType(
-            List<ConsoleEnumType<MaskType>> consoleMaskTypes,
-            String key
+            @NonNull List<ConsoleEnumType<MaskType>> consoleMaskTypes,
+            @NonNull String key
     ) {
         return consoleMaskTypes.stream()
                 .filter((consoleSolverType) -> consoleSolverType.getConsoleKey().equals(key))
@@ -148,10 +159,11 @@ public class Runner {
                 .getEnumType();
     }
 
+    @NonNull
     private static WordTrie createWordTrie(
-            List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes,
-            String key,
-            String dictionaryPath
+            @NonNull List<ConsoleEnumType<WordTrieType>> consoleWordTrieTypes,
+            @NonNull String key,
+            @NonNull String dictionaryPath
     ) {
         WordTrieType wordTrieType = consoleWordTrieTypes.stream()
                 .filter((consoleWordTrieType) -> consoleWordTrieType.getConsoleKey().equals(key))
@@ -165,12 +177,13 @@ public class Runner {
         }
     }
 
+    @NonNull
     private static Solver createSolver(
-            List<ConsoleEnumType<SolverType>> consoleSolverTypes,
-            String key,
-            String linesSeparator,
-            MaskType maskType,
-            WordTrie trie
+            @NonNull List<ConsoleEnumType<SolverType>> consoleSolverTypes,
+            @NonNull String key,
+            @NonNull String linesSeparator,
+            @NonNull MaskType maskType,
+            @NonNull WordTrie trie
     ) {
         SolverType solverType = consoleSolverTypes.stream()
                 .filter((consoleSolverType) -> consoleSolverType.getConsoleKey().equals(key))
@@ -182,10 +195,13 @@ public class Runner {
 
     private interface ConsoleEnumType<E extends Enum<E>> {
 
+        @NonNull
         E getEnumType();
 
+        @NonNull
         String getTypeClassName();
 
+        @NonNull
         default String getConsoleKey() {
             return getTypeClassName().chars()
                     .filter(Character::isUpperCase)
@@ -194,37 +210,46 @@ public class Runner {
                     .collect(Collectors.joining());
         }
 
-        static <E extends Enum<E>> String getConsoleKeys(List<ConsoleEnumType<E>> types) {
+        @NonNull
+        static <E extends Enum<E>> String getConsoleKeys(@NonNull List<ConsoleEnumType<E>> types) {
             return types.stream()
                     .map(ConsoleEnumType::getConsoleKey)
                     .collect(Collectors.joining("|"));
         }
 
-        static <E extends Enum<E>> String getConsoleKeysAndTypeClassNames(List<ConsoleEnumType<E>> types) {
+        @NonNull
+        static <E extends Enum<E>> String getConsoleKeysAndTypeClassNames(@NonNull List<ConsoleEnumType<E>> types) {
             return types.stream()
                     .map(value -> value.getConsoleKey() + ": " + value.getTypeClassName())
                     .collect(Collectors.joining(", "));
         }
     }
 
-    private static class Arguments {
+    private static final class Arguments {
+        @NonNull
         public String text = "";
         public boolean fullMatch = false;
         public int minLength = 4;
         public int maxLength = 10;
+        @NonNull
         public String linesSeparator = "/";
+        @NonNull
         public String dictionaryPath = "";
+        @NonNull
         public String maskTypeName;
+        @NonNull
         public String wordTrieName;
+        @NonNull
         public String solverName;
 
-        Arguments(String maskTypeName, String wordTrieName, String solverName) {
+        Arguments(@NonNull String maskTypeName, @NonNull String wordTrieName, @NonNull String solverName) {
             this.maskTypeName = maskTypeName;
             this.wordTrieName = wordTrieName;
             this.solverName = solverName;
         }
 
-        private static Arguments parse(String defaultMaskTypeKey, String defaultWordTrieKey, String defaultSolverKey, String[] args) {
+        @NonNull
+        private static Arguments parse(@NonNull String defaultMaskTypeKey, @NonNull String defaultWordTrieKey, @NonNull String defaultSolverKey, @NonNull String[] args) {
             Arguments arguments = new Arguments(defaultMaskTypeKey, defaultWordTrieKey, defaultSolverKey);
             arguments.text = args[0];
             try {
@@ -268,7 +293,7 @@ public class Runner {
                     .toList();
 
             for (Integer lengthTemp : lengths) {
-                if (!lengthTemp.equals(lengths.get(0))) {
+                if (!lengthTemp.equals(lengths.getFirst())) {
                     throw new IllegalArgumentException("Strings have a different number of characters");
                 }
             }

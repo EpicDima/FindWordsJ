@@ -1,10 +1,12 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.MaskType;
 import com.epicdima.findwords.trie.WordTrieType;
 
-public class CoroutineSolverTest extends SolverTest {
+public final class CoroutineSolverTest extends SolverTest {
 
+    @NonNull
     @Override
     protected Solver createSolver() {
         return SolverType.COROUTINE.createInstance(

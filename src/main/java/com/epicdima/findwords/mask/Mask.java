@@ -1,5 +1,7 @@
 package com.epicdima.findwords.mask;
 
+import androidx.annotation.NonNull;
+
 public interface Mask {
 
     boolean get(int index);
@@ -8,19 +10,30 @@ public interface Mask {
 
     void set(int i, int j, boolean value);
 
+    @NonNull
     Mask copy();
 
     boolean isAllTrue();
 
     boolean isAllFalse();
 
-    Mask and(Mask another);
+    @NonNull
+    Mask and(@NonNull Mask another);
 
-    Mask or(Mask another);
+    @NonNull
+    Mask or(@NonNull Mask another);
 
-    Mask xor(Mask another);
+    @NonNull
+    Mask xor(@NonNull Mask another);
 
+    @NonNull
     Mask invert();
 
-    boolean notIntersects(Mask another);
+    boolean notIntersects(@NonNull Mask another);
+
+    @Override
+    boolean equals(Object o);
+
+    @Override
+    int hashCode();
 }

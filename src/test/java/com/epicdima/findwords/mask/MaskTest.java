@@ -1,5 +1,6 @@
 package com.epicdima.findwords.mask;
 
+import androidx.annotation.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -7,10 +8,11 @@ public abstract class MaskTest {
     protected final int rows = 16;
     protected final int cols = 16;
 
+    @NonNull
     protected abstract Mask createMask();
 
     @Test
-    void setAndGet1() {
+    public final void setAndGet1() {
         Mask mask = createMask();
 
         mask.set(0, 0, true);
@@ -39,7 +41,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void setAndGet2() {
+    public final void setAndGet2() {
         Mask mask = createMask();
 
         mask.set(0, 0, true);
@@ -68,7 +70,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void copy() {
+    public final void copy() {
         Mask source = createMask();
 
         source.set(0, 0, true);
@@ -87,7 +89,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void isAllTrue() {
+    public final void isAllTrue() {
         Mask mask = createMask();
 
         for (int i = 0; i < rows; i++) {
@@ -101,7 +103,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void isAllFalse() {
+    public final void isAllFalse() {
         Mask mask = createMask();
 
         Assertions.assertTrue(mask.isAllFalse());
@@ -115,7 +117,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void and() {
+    public final void and() {
         Mask mask1 = createMask();
         Mask mask2 = createMask();
 
@@ -145,7 +147,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void or() {
+    public final void or() {
         Mask mask1 = createMask();
         Mask mask2 = createMask();
 
@@ -175,7 +177,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void xor() {
+    public final void xor() {
         Mask mask1 = createMask();
         Mask mask2 = createMask();
 
@@ -198,7 +200,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void invert() {
+    public final void invert() {
         Mask mask = createMask();
 
         Assertions.assertTrue(mask.isAllFalse());
@@ -217,7 +219,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void notIntersects() {
+    public final void notIntersects() {
         Mask mask1 = createMask();
         Mask mask2 = createMask();
 
@@ -242,7 +244,7 @@ public abstract class MaskTest {
     }
 
     @Test
-    void testEqualsAndHashCode() {
+    public final void testEqualsAndHashCode() {
         Mask mask1 = createMask();
         Mask mask2 = createMask();
 

@@ -1,6 +1,7 @@
 package com.epicdima.findwords.solver;
 
+import androidx.annotation.NonNull;
 import com.epicdima.findwords.mask.Mask;
 
-public record WordAndMask(String word, Mask mask) {
+public record WordAndMask(@NonNull String word, @NonNull Mask mask) {
 }

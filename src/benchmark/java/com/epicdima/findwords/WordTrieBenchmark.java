@@ -3,7 +3,6 @@ package com.epicdima.findwords;
 import com.epicdima.findwords.trie.WordTrie;
 import com.epicdima.findwords.trie.WordTrieType;
 import com.epicdima.findwords.utils.BenchmarkUtils;
-import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -15,7 +14,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused") // used because the benchmark
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
@@ -45,7 +46,7 @@ public class WordTrieBenchmark {
     private WordTrie wordTrie;
 
     @Setup
-    public void setup() throws Throwable {
+    public void setup() {
         wordTrieType = WordTrieType.valueOf(wordTrieTypeName);
         wordTrie = wordTrieType.createInstance(BenchmarkUtils.DEFAULT_DICTIONARY);
     }

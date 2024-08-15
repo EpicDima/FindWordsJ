@@ -1,99 +1,93 @@
 package com.epicdima.findwords.trie;
 
+import androidx.annotation.NonNull;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HashWordTrie implements WordTrie {
+public final class HashWordTrie implements WordTrie {
+    @NonNull
     private final Node root = new Node();
 
     private HashWordTrie() {
     }
 
-    public static WordTrie createInstance(String dictionaryPath) {
+    @SuppressWarnings("unused") // used via MethodHandle
+    @NonNull
+    public static WordTrie createInstance(@NonNull String dictionaryPath) {
         WordTrie wordTrie = new HashWordTrie();
         WordTrie.fill(wordTrie, dictionaryPath);
         return wordTrie;
     }
 
-    public static WordTrie createInstance(InputStream inputStream) {
+    @SuppressWarnings("unused") // used via MethodHandle
+    @NonNull
+    public static WordTrie createInstance(@NonNull InputStream inputStream) {
         WordTrie wordTrie = new HashWordTrie();
         WordTrie.fill(wordTrie, inputStream);
         return wordTrie;
     }
 
     @Override
-    public void insert(final String word) {
-        final int length = word.length() - 1;
+    public void insert(@NonNull final String word) {
+        final int wordLength = word.codePointCount(0, word.length()) - 1;
         int index = 0;
-
         Node node = root;
-
         while (true) {
-            char ch = word.charAt(index);
-
-            Node tempNode = node.letters.get(ch);
+            int codePoint = word.codePointAt(index);
+            Node tempNode = node.letters.get(codePoint);
             if (tempNode != null) {
-                if (index < length) {
+                if (index < wordLength) {
                     node = tempNode;
                 } else {
                     tempNode.setWord(true);
                     break;
                 }
             } else {
-                if (index < length) {
+                if (index < wordLength) {
                     Node newNode = new Node();
-                    node.letters.put(ch, newNode);
+                    node.letters.put(codePoint, newNode);
                     node = newNode;
                 } else {
-                    node.letters.put(ch, new Node(true));
+                    node.letters.put(codePoint, new Node(true));
                     break;
                 }
             }
-
             index++;
         }
     }
 
     @Override
-    public boolean containsSubstring(final String substring) {
-        final int length = substring.length();
+    public boolean containsSubstring(@NonNull final String substring) {
+        final int substringLength = substring.codePointCount(0, substring.length());
         int index = 0;
-
         Node node = root;
-
         while (node != null) {
-            if (index == length) {
+            if (index == substringLength) {
                 return true;
             }
-
-            node = node.letters.get(substring.charAt(index++));
+            node = node.letters.get(substring.codePointAt(index++));
         }
-
         return false;
     }
 
     @Override
-    public boolean containsWord(final String word) {
-        final int length = word.length();
+    public boolean containsWord(@NonNull final String word) {
+        final int wordLength = word.codePointCount(0, word.length());
         int index = 0;
-
         Node node = root;
-
         while (node != null) {
-            if (index == length) {
+            if (index == wordLength) {
                 return node.isWord;
             }
-
-            node = node.letters.get(word.charAt(index++));
+            node = node.letters.get(word.codePointAt(index++));
         }
-
         return false;
     }
 
-
-    private static class Node {
-        private final Map<Character, Node> letters = new HashMap<>();
+    private static final class Node {
+        @NonNull
+        private final Map<Integer, Node> letters = new HashMap<>();
         private boolean isWord;
 
         public Node(boolean isWord) {
