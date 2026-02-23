@@ -30,12 +30,14 @@ public final class HashWordTrie implements WordTrie {
 
     @Override
     public void insert(@NonNull final String word) {
-        final int wordLength = word.codePointCount(0, word.length()) - 1;
+        final int wordLength = word.length();
         int index = 0;
         Node node = root;
-        while (true) {
+        while (index < wordLength) {
             int codePoint = word.codePointAt(index);
+            index += Character.charCount(codePoint);
             Node tempNode = node.letters.get(codePoint);
+
             if (tempNode != null) {
                 if (index < wordLength) {
                     node = tempNode;
@@ -53,34 +55,37 @@ public final class HashWordTrie implements WordTrie {
                     break;
                 }
             }
-            index++;
         }
     }
 
     @Override
     public boolean containsSubstring(@NonNull final String substring) {
-        final int substringLength = substring.codePointCount(0, substring.length());
+        final int substringLength = substring.length();
         int index = 0;
         Node node = root;
-        while (node != null) {
-            if (index == substringLength) {
+        while (node != null && index < substringLength) {
+            int codePoint = substring.codePointAt(index);
+            index += Character.charCount(codePoint);
+            node = node.letters.get(codePoint);
+            if (index == substringLength && node != null) {
                 return true;
             }
-            node = node.letters.get(substring.codePointAt(index++));
         }
         return false;
     }
 
     @Override
     public boolean containsWord(@NonNull final String word) {
-        final int wordLength = word.codePointCount(0, word.length());
+        final int wordLength = word.length();
         int index = 0;
         Node node = root;
-        while (node != null) {
-            if (index == wordLength) {
+        while (node != null && index < wordLength) {
+            int codePoint = word.codePointAt(index);
+            index += Character.charCount(codePoint);
+            node = node.letters.get(codePoint);
+            if (index == wordLength && node != null) {
                 return node.isWord;
             }
-            node = node.letters.get(word.codePointAt(index++));
         }
         return false;
     }

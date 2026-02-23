@@ -5,8 +5,10 @@ import com.epicdima.findwords.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -82,5 +84,42 @@ public abstract class TrieTest {
             Assertions.assertFalse(trie.containsWord(word + word + word));
             Assertions.assertFalse(trie.containsWord(word + word + word + word));
         }
+    }
+
+    @Test
+    public void searchWordWithSurrogatePair() {
+        String customDict = "a\uD83D\uDE0Ab\n";
+        InputStream is = new ByteArrayInputStream(customDict.getBytes(StandardCharsets.UTF_8));
+
+        WordTrie trie;
+        if (this instanceof ArrayWordTrieTest) {
+            trie = WordTrieType.ARRAY.createInstance(is);
+        } else if (this instanceof HashWordTrieTest) {
+            trie = WordTrieType.HASH.createInstance(is);
+        } else {
+            trie = WordTrieType.SET.createInstance(is);
+        }
+
+        Assertions.assertTrue(trie.containsWord("a\uD83D\uDE0Ab"));
+        Assertions.assertFalse(trie.containsWord("a\uD83D\uDE0Ac"));
+    }
+
+    @Test
+    public void verifyNoFalsePositivesWithSameModulo() {
+        String customDict = "A\nE\n";
+        InputStream is = new ByteArrayInputStream(customDict.getBytes(StandardCharsets.UTF_8));
+
+        WordTrie trie;
+        if (this instanceof ArrayWordTrieTest) {
+            trie = WordTrieType.ARRAY.createInstance(is);
+        } else if (this instanceof HashWordTrieTest) {
+            trie = WordTrieType.HASH.createInstance(is);
+        } else {
+            trie = WordTrieType.SET.createInstance(is);
+        }
+
+        Assertions.assertTrue(trie.containsWord("A"));
+        Assertions.assertTrue(trie.containsWord("E"));
+        Assertions.assertFalse(trie.containsWord("I"));
     }
 }

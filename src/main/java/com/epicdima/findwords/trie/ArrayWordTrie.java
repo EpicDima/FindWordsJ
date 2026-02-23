@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +19,15 @@ public final class ArrayWordTrie implements WordTrie {
     private final Node root;
     private final int abcLength;
 
-    private ArrayWordTrie(int abcLength) {
+    private final int[] charMap;
+    private final int minCodePoint;
+    private final int maxCodePoint;
+
+    private ArrayWordTrie(int abcLength, int[] charMap, int minCodePoint, int maxCodePoint) {
         this.abcLength = abcLength;
+        this.charMap = charMap;
+        this.minCodePoint = minCodePoint;
+        this.maxCodePoint = maxCodePoint;
         this.root = new Node(abcLength);
     }
 
@@ -39,17 +47,39 @@ public final class ArrayWordTrie implements WordTrie {
         List<String> words = new ArrayList<>();
         Set<Integer> abc = new HashSet<>();
 
+        int minCodePoint = Integer.MAX_VALUE;
+        int maxCodePoint = Integer.MIN_VALUE;
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String word;
             while ((word = reader.readLine()) != null) {
                 words.add(word);
-                word.codePoints().forEach(abc::add);
+                for (int i = 0; i < word.length(); ) {
+                    int codePoint = word.codePointAt(i);
+                    abc.add(codePoint);
+                    if (codePoint < minCodePoint) minCodePoint = codePoint;
+                    if (codePoint > maxCodePoint) maxCodePoint = codePoint;
+                    i += Character.charCount(codePoint);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        WordTrie wordTrie = new ArrayWordTrie(abc.size());
+        if (words.isEmpty()) {
+            return new ArrayWordTrie(0, new int[0], 0, -1);
+        }
+
+        int mapSize = maxCodePoint - minCodePoint + 1;
+        int[] charMap = new int[mapSize];
+        Arrays.fill(charMap, -1);
+
+        int index = 0;
+        for (Integer codePoint : abc) {
+            charMap[codePoint - minCodePoint] = index++;
+        }
+
+        WordTrie wordTrie = new ArrayWordTrie(abc.size(), charMap, minCodePoint, maxCodePoint);
         for (String word : words) {
             wordTrie.insert(word);
         }
@@ -57,13 +87,27 @@ public final class ArrayWordTrie implements WordTrie {
         return wordTrie;
     }
 
+    private int getIndexForCodePoint(int codePoint) {
+        if (codePoint < minCodePoint || codePoint > maxCodePoint) {
+            return -1;
+        }
+        return charMap[codePoint - minCodePoint];
+    }
+
     @Override
     public void insert(@NonNull final String word) {
-        final int wordLength = word.codePointCount(0, word.length()) - 1;
+        final int wordLength = word.length();
         int index = 0;
         Node node = root;
-        while (true) {
-            int key = word.codePointAt(index) % abcLength;
+        while (index < wordLength) {
+            int codePoint = word.codePointAt(index);
+            index += Character.charCount(codePoint);
+
+            int key = getIndexForCodePoint(codePoint);
+            if (key == -1) {
+                continue;
+            }
+
             Node tempNode = node.nodes[key];
             if (tempNode != null) {
                 if (index < wordLength) {
@@ -82,34 +126,49 @@ public final class ArrayWordTrie implements WordTrie {
                     break;
                 }
             }
-            index++;
         }
     }
 
     @Override
     public boolean containsSubstring(@NonNull final String substring) {
-        final int substringLength = substring.codePointCount(0, substring.length());
+        final int substringLength = substring.length();
+        if (substringLength == 0) return false;
+
         int index = 0;
         Node node = root;
-        while (node != null) {
-            if (index == substringLength) {
+        while (node != null && index < substringLength) {
+            int codePoint = substring.codePointAt(index);
+            index += Character.charCount(codePoint);
+
+            int key = getIndexForCodePoint(codePoint);
+            if (key == -1) return false;
+
+            node = node.nodes[key];
+            if (index == substringLength && node != null) {
                 return true;
             }
-            node = node.nodes[substring.codePointAt(index++) % abcLength];
         }
         return false;
     }
 
     @Override
     public boolean containsWord(@NonNull final String word) {
-        final int wordLength = word.codePointCount(0, word.length());
+        final int wordLength = word.length();
+        if (wordLength == 0) return false;
+
         int index = 0;
         Node node = root;
-        while (node != null) {
-            if (index == wordLength) {
+        while (node != null && index < wordLength) {
+            int codePoint = word.codePointAt(index);
+            index += Character.charCount(codePoint);
+
+            int key = getIndexForCodePoint(codePoint);
+            if (key == -1) return false;
+
+            node = node.nodes[key];
+            if (index == wordLength && node != null) {
                 return node.isWord;
             }
-            node = node.nodes[word.codePointAt(index++) % abcLength];
         }
         return false;
     }

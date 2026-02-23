@@ -30,13 +30,13 @@ public final class SetWordTrie implements WordTrie {
     @Override
     public void insert(@NonNull String word) {
         words.add(word);
-        final int wordLength = word.codePointCount(0, word.length());
-        final StringBuilder stringBuilder = new StringBuilder(wordLength);
-        word.codePoints().forEach(codePoint -> {
-                    stringBuilder.appendCodePoint(codePoint);
-                    substrings.add(stringBuilder.toString());
-                }
-        );
+        final StringBuilder stringBuilder = new StringBuilder(word.length());
+        for (int i = 0; i < word.length(); ) {
+            int codePoint = word.codePointAt(i);
+            stringBuilder.appendCodePoint(codePoint);
+            substrings.add(stringBuilder.toString());
+            i += Character.charCount(codePoint);
+        }
     }
 
     @Override
