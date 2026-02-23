@@ -20,41 +20,61 @@ public class MultiThreadedSolver extends DefaultSolver {
         super(linesSeparator, maskType, wordTrie);
     }
 
+    private static final int MAX_DEPTH = 3;
+
     @Override
     protected void findFullMatches(@NonNull List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
 
         threadPool = Executors.newCachedThreadPool();
         try {
-            f2(originalMask.copy(), matrix, 0, new ArrayList<>());
+            f2MT(originalMask.copy(), matrix, new ArrayList<>(), 0);
         } finally {
             threadPool.close();
         }
     }
 
-    @Override
-    protected void f2(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, int startIndex, @NonNull List<WordAndMask> result) {
+    protected void f2MT(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, @NonNull List<WordAndMask> result, int depth) {
         if (mask.isAllTrue()) {
             fullMatches.add(result);
             return;
         }
 
-        for (int i = startIndex; i < rows * cols; i++) {
-            if (mask.get(i)) {
-                continue;
+        int targetIndex = -1;
+        int minOptions = Integer.MAX_VALUE;
+
+        for (int i = 0; i < rows * cols; i++) {
+            if (!mask.get(i)) {
+                int optionsCount = 0;
+                for (WordAndMask wordAndMask : matrix[i / cols][i % cols]) {
+                    if (mask.notIntersects(wordAndMask.mask())) {
+                        optionsCount++;
+                    }
+                }
+
+                if (optionsCount < minOptions) {
+                    minOptions = optionsCount;
+                    targetIndex = i;
+                    if (optionsCount <= 1) {
+                        break;
+                    }
+                }
             }
+        }
+
+        if (targetIndex != -1) {
             List<Future<?>> futures = new ArrayList<>();
 
-            for (WordAndMask positionWordAndMask : matrix[i / cols][i % cols]) {
+            for (WordAndMask positionWordAndMask : matrix[targetIndex / cols][targetIndex % cols]) {
                 if (mask.notIntersects(positionWordAndMask.mask())) {
-                    if (threadPool != null) {
-                        final int finalI = i;
-                        futures.add(threadPool.submit(() -> {
-                            List<WordAndMask> tempResult = new ArrayList<>(result.size() + 1);
-                            tempResult.addAll(result);
-                            tempResult.add(positionWordAndMask);
-                            f2(mask.copy().or(positionWordAndMask.mask()), matrix, finalI + 1, tempResult);
-                        }));
+                    List<WordAndMask> tempResult = new ArrayList<>(result.size() + 1);
+                    tempResult.addAll(result);
+                    tempResult.add(positionWordAndMask);
+
+                    if (threadPool != null && depth < MAX_DEPTH) {
+                        futures.add(threadPool.submit(() -> f2MT(mask.copy().or(positionWordAndMask.mask()), matrix, tempResult, depth + 1)));
+                    } else {
+                        f2(mask.copy().or(positionWordAndMask.mask()), matrix, tempResult);
                     }
                 }
             }
@@ -67,7 +87,6 @@ public class MultiThreadedSolver extends DefaultSolver {
                     future.cancel(true);
                 }
             }
-            break;
         }
     }
 }

@@ -14,25 +14,44 @@ class DeepRecursionSolver(
         val mask = originalMask.copy()
         val result = mutableListOf<WordAndMask>()
 
-        val deepRecursiveFunction = DeepRecursiveFunction<Int, Unit> { startIndex ->
+        val deepRecursiveFunction = DeepRecursiveFunction { _ ->
             if (mask.isAllTrue()) {
                 fullMatches.add(result.toList())
                 return@DeepRecursiveFunction
             }
-            for (i in startIndex until rows * cols) {
-                if (mask[i]) {
-                    continue
+
+            var targetIndex = -1
+            var minOptions = Int.MAX_VALUE
+
+            for (i in 0 until rows * cols) {
+                if (!mask[i]) {
+                    var optionsCount = 0
+                    for (wordAndMask in matrix[i / cols][i % cols]) {
+                        if (mask.notIntersects(wordAndMask.mask)) {
+                            optionsCount++
+                        }
+                    }
+
+                    if (optionsCount < minOptions) {
+                        minOptions = optionsCount
+                        targetIndex = i
+                        if (optionsCount <= 1) {
+                            break
+                        }
+                    }
                 }
-                for (positionWordAndMask in matrix[i / cols][i % cols]) {
+            }
+
+            if (targetIndex != -1) {
+                for (positionWordAndMask in matrix[targetIndex / cols][targetIndex % cols]) {
                     if (mask.notIntersects(positionWordAndMask.mask)) {
                         result.add(positionWordAndMask)
                         mask.or(positionWordAndMask.mask)
-                        callRecursive(i + 1)
+                        callRecursive(targetIndex + 1)
                         result.removeLast()
                         mask.xor(positionWordAndMask.mask)
                     }
                 }
-                break
             }
         }
         deepRecursiveFunction.invoke(0)

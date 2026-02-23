@@ -176,20 +176,18 @@ public class DefaultSolver implements Solver {
 
     protected void findFullMatches(@NonNull List<WordAndMask> matchedWords) {
         List<WordAndMask>[][] matrix = createWordAndMaskMatrix(matchedWords);
-        f2(originalMask.copy(), matrix, 0, new ArrayList<>());
+        f2(originalMask.copy(), matrix, new ArrayList<>());
     }
 
     @NonNull
     protected List<WordAndMask>[][] createWordAndMaskMatrix(@NonNull List<WordAndMask> matchedWords) {
-        WordAndMask[] wordAndMasks = getRawMasks(matchedWords);
-
         @SuppressWarnings("unchecked")
         List<WordAndMask>[][] matrix = new List[rows][cols];
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] = new ArrayList<>();
-                for (WordAndMask wordAndMask : wordAndMasks) {
+                for (WordAndMask wordAndMask : matchedWords) {
                     if (wordAndMask.mask().get(i, j)) {
                         matrix[i][j].add(wordAndMask);
                     }
@@ -200,33 +198,43 @@ public class DefaultSolver implements Solver {
         return matrix;
     }
 
-    @NonNull
-    private WordAndMask[] getRawMasks(@NonNull List<WordAndMask> matchedWords) {
-        Mask invertedOriginalMask = originalMask.copy().invert();
-        return matchedWords.stream()
-                .map(matchedWord -> new WordAndMask(matchedWord.word(), matchedWord.mask().copy().and(invertedOriginalMask)))
-                .toArray(WordAndMask[]::new);
-    }
-
-    protected void f2(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, int startIndex, @NonNull List<WordAndMask> result) {
+    protected void f2(@NonNull Mask mask, @NonNull List<WordAndMask>[][] matrix, @NonNull List<WordAndMask> result) {
         if (mask.isAllTrue()) {
             fullMatches.add(new ArrayList<>(result));
             return;
         }
 
-        for (int i = startIndex; i < rows * cols; i++) {
-            if (mask.get(i)) {
-                continue;
+        int targetIndex = -1;
+        int minOptions = Integer.MAX_VALUE;
+
+        for (int i = 0; i < rows * cols; i++) {
+            if (!mask.get(i)) {
+                int optionsCount = 0;
+                for (WordAndMask wordAndMask : matrix[i / cols][i % cols]) {
+                    if (mask.notIntersects(wordAndMask.mask())) {
+                        optionsCount++;
+                    }
+                }
+
+                if (optionsCount < minOptions) {
+                    minOptions = optionsCount;
+                    targetIndex = i;
+                    if (optionsCount <= 1) {
+                        break;
+                    }
+                }
             }
-            for (WordAndMask positionWordAndMask : matrix[i / cols][i % cols]) {
+        }
+
+        if (targetIndex != -1) {
+            for (WordAndMask positionWordAndMask : matrix[targetIndex / cols][targetIndex % cols]) {
                 if (mask.notIntersects(positionWordAndMask.mask())) {
                     result.add(positionWordAndMask);
-                    f2(mask.or(positionWordAndMask.mask()), matrix, i + 1, result);
+                    f2(mask.or(positionWordAndMask.mask()), matrix, result);
                     mask.xor(positionWordAndMask.mask());
                     result.removeLast();
                 }
             }
-            break;
         }
     }
 }

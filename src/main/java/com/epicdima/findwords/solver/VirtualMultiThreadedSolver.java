@@ -19,7 +19,7 @@ public final class VirtualMultiThreadedSolver extends MultiThreadedSolver {
 
         threadPool = Executors.newVirtualThreadPerTaskExecutor();
         try {
-            f2(originalMask.copy(), matrix, 0, new ArrayList<>());
+            f2MT(originalMask.copy(), matrix, new ArrayList<>(), 0);
         } finally {
             threadPool.close();
         }
