@@ -38,6 +38,7 @@ public class WordTrieBenchmark {
             "HASH",
             "ARRAY",
             "SET",
+            "FLAT",
     })
     public String wordTrieTypeName;
 

@@ -10,7 +10,8 @@ import java.lang.invoke.MethodType;
 public enum WordTrieType {
     HASH(HashWordTrie.class),
     ARRAY(ArrayWordTrie.class),
-    SET(SetWordTrie.class);
+    SET(SetWordTrie.class),
+    FLAT(FlatWordTrie.class);
 
     @NonNull
     private final Class<? extends WordTrie> wordTrieClass;
