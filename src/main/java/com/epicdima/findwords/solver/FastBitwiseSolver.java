@@ -6,7 +6,7 @@ import com.epicdima.findwords.trie.WordTrie;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FastBitwiseSolver extends DefaultSolver {
+public final class FastBitwiseSolver extends DefaultSolver {
 
     public FastBitwiseSolver(@NonNull String linesSeparator, @NonNull MaskType maskType, @NonNull WordTrie wordTrie) {
         super(linesSeparator, maskType, wordTrie);

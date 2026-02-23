@@ -6,7 +6,7 @@ import com.epicdima.findwords.trie.WordTrie;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DancingLinksSolver extends DefaultSolver {
+public final class DancingLinksSolver extends DefaultSolver {
 
     private int[] L, R, U, D, C, S, RowOf;
     private int[] solutionStack;
