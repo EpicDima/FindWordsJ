@@ -8,7 +8,8 @@ import java.lang.invoke.MethodType;
 public enum MaskType {
     BOOLEAN(BooleanMask.class),
     FLAT(FlatBooleanMask.class),
-    BITSET(BitSetMask.class);
+    BITSET(BitSetMask.class),
+    LONG_ARRAY(LongArrayMask.class);
 
     @NonNull
     private final Class<? extends Mask> maskClass;

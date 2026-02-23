@@ -30,6 +30,7 @@ public class MaskBenchmark {
             "BOOLEAN",
             "FLAT",
             "BITSET",
+            "LONG_ARRAY",
     })
     public String maskTypeName;
 
