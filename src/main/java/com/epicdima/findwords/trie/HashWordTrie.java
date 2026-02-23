@@ -29,6 +29,11 @@ public final class HashWordTrie implements WordTrie {
     }
 
     @Override
+    public WordTrie.Cursor cursor() {
+        return new HashCursor(root);
+    }
+
+    @Override
     public void insert(@NonNull final String word) {
         final int wordLength = word.length();
         int index = 0;
@@ -105,6 +110,36 @@ public final class HashWordTrie implements WordTrie {
 
         public void setWord(boolean word) {
             isWord = word;
+        }
+    }
+
+    private static class HashCursor implements WordTrie.Cursor {
+        private final Node[] path = new Node[256];
+        private int depth = 0;
+
+        public HashCursor(Node root) {
+            this.path[0] = root;
+        }
+
+        @Override
+        public boolean push(int codePoint) {
+            Node nextNode = path[depth].letters.get(codePoint);
+            if (nextNode == null) {
+                return false;
+            }
+            depth++;
+            path[depth] = nextNode;
+            return true;
+        }
+
+        @Override
+        public void pop() {
+            depth--;
+        }
+
+        @Override
+        public boolean isWord() {
+            return path[depth].isWord;
         }
     }
 }

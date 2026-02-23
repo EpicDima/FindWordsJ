@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class TrieTest {
+public abstract class WordTrieTest {
     @NonNull
     protected final String dictionaryPath = TestUtils.DEFAULT_DICTIONARY;
 
@@ -91,14 +91,12 @@ public abstract class TrieTest {
         String customDict = "a\uD83D\uDE0Ab\n";
         InputStream is = new ByteArrayInputStream(customDict.getBytes(StandardCharsets.UTF_8));
 
-        WordTrie trie;
-        if (this instanceof ArrayWordTrieTest) {
-            trie = WordTrieType.ARRAY.createInstance(is);
-        } else if (this instanceof HashWordTrieTest) {
-            trie = WordTrieType.HASH.createInstance(is);
-        } else {
-            trie = WordTrieType.SET.createInstance(is);
-        }
+        WordTrie trie = switch (this) {
+            case ArrayWordTrieTest ignored -> WordTrieType.ARRAY.createInstance(is);
+            case HashWordTrieTest ignored -> WordTrieType.HASH.createInstance(is);
+            case FlatWordTrieTest ignored -> WordTrieType.FLAT.createInstance(is);
+            default -> WordTrieType.SET.createInstance(is);
+        };
 
         Assertions.assertTrue(trie.containsWord("a\uD83D\uDE0Ab"));
         Assertions.assertFalse(trie.containsWord("a\uD83D\uDE0Ac"));
@@ -109,17 +107,92 @@ public abstract class TrieTest {
         String customDict = "A\nE\n";
         InputStream is = new ByteArrayInputStream(customDict.getBytes(StandardCharsets.UTF_8));
 
-        WordTrie trie;
-        if (this instanceof ArrayWordTrieTest) {
-            trie = WordTrieType.ARRAY.createInstance(is);
-        } else if (this instanceof HashWordTrieTest) {
-            trie = WordTrieType.HASH.createInstance(is);
-        } else {
-            trie = WordTrieType.SET.createInstance(is);
-        }
+        WordTrie trie = switch (this) {
+            case ArrayWordTrieTest ignored -> WordTrieType.ARRAY.createInstance(is);
+            case HashWordTrieTest ignored -> WordTrieType.HASH.createInstance(is);
+            case FlatWordTrieTest ignored -> WordTrieType.FLAT.createInstance(is);
+            default -> WordTrieType.SET.createInstance(is);
+        };
 
         Assertions.assertTrue(trie.containsWord("A"));
         Assertions.assertTrue(trie.containsWord("E"));
         Assertions.assertFalse(trie.containsWord("I"));
+    }
+
+    @Test
+    public void cursorPushAndPop() {
+        String text = "АВТО\nАВТОР\nАББА\n";
+        InputStream is = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+        WordTrie trie = switch (this) {
+            case ArrayWordTrieTest ignored -> WordTrieType.ARRAY.createInstance(is);
+            case HashWordTrieTest ignored -> WordTrieType.HASH.createInstance(is);
+            case FlatWordTrieTest ignored -> WordTrieType.FLAT.createInstance(is);
+            default -> WordTrieType.SET.createInstance(is);
+        };
+
+        WordTrie.Cursor cursor = trie.cursor();
+        Assertions.assertNotNull(cursor);
+
+        Assertions.assertTrue(cursor.push('А'));
+        Assertions.assertFalse(cursor.isWord());
+
+        Assertions.assertTrue(cursor.push('В'));
+        Assertions.assertFalse(cursor.isWord());
+
+        Assertions.assertTrue(cursor.push('Т'));
+        Assertions.assertFalse(cursor.isWord());
+
+        Assertions.assertTrue(cursor.push('О'));
+        Assertions.assertTrue(cursor.isWord());
+
+        Assertions.assertTrue(cursor.push('Р'));
+        Assertions.assertTrue(cursor.isWord());
+
+        Assertions.assertFalse(cursor.push('К'));
+        Assertions.assertTrue(cursor.isWord());
+
+        cursor.pop();
+        Assertions.assertTrue(cursor.isWord());
+
+        cursor.pop();
+        cursor.pop();
+        cursor.pop();
+        Assertions.assertFalse(cursor.isWord());
+
+        Assertions.assertTrue(cursor.push('Б'));
+        Assertions.assertTrue(cursor.push('Б'));
+        Assertions.assertTrue(cursor.push('А'));
+        Assertions.assertTrue(cursor.isWord());
+    }
+
+    @Test
+    public void surrogatePairsInCursor() {
+        String text = "a\uD83D\uDE0Ab\n";
+        InputStream is = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+        WordTrie trie = switch (this) {
+            case ArrayWordTrieTest ignored -> WordTrieType.ARRAY.createInstance(is);
+            case HashWordTrieTest ignored -> WordTrieType.HASH.createInstance(is);
+            case FlatWordTrieTest ignored -> WordTrieType.FLAT.createInstance(is);
+            default -> WordTrieType.SET.createInstance(is);
+        };
+
+        WordTrie.Cursor cursor = trie.cursor();
+        Assertions.assertNotNull(cursor);
+
+        Assertions.assertTrue(cursor.push('a'));
+        Assertions.assertFalse(cursor.isWord());
+
+        int emojiCodePoint = "\uD83D\uDE0A".codePointAt(0);
+        Assertions.assertTrue(cursor.push(emojiCodePoint));
+        Assertions.assertFalse(cursor.isWord());
+
+        Assertions.assertTrue(cursor.push('b'));
+        Assertions.assertTrue(cursor.isWord());
+
+        cursor.pop();
+        Assertions.assertFalse(cursor.isWord());
+
+        cursor.pop();
+        Assertions.assertFalse(cursor.isWord());
     }
 }

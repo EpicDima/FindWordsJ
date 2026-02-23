@@ -2,7 +2,7 @@ package com.epicdima.findwords.trie;
 
 import androidx.annotation.NonNull;
 
-public final class FlatWordTrieTest extends TrieTest {
+public final class FlatWordTrieTest extends WordTrieTest {
 
     @NonNull
     @Override

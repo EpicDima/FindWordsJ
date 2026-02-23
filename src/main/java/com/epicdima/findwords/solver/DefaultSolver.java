@@ -23,16 +23,16 @@ public class DefaultSolver implements Solver {
     @NonNull
     private final MaskType maskType;
     @NonNull
-    private final WordTrie wordTrie;
+    protected final WordTrie wordTrie;
 
-    private int minWordLength;
-    private int maxWordLength;
+    protected int minWordLength;
+    protected int maxWordLength;
 
     protected int rows;
     protected int cols;
 
     @NonNull
-    private char[][] matrix = new char[0][0];
+    protected char[][] matrix = new char[0][0];
     @NonNull
     protected Mask originalMask;
 
@@ -112,18 +112,25 @@ public class DefaultSolver implements Solver {
     }
 
     @NonNull
-    private Set<WordAndMask> findWords() {
+    protected Set<WordAndMask> findWords() {
         Set<WordAndMask> wordsAndMasks = new HashSet<>();
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (!originalMask.get(i, j)) {
-                    originalMask.set(i, j, true);
-                    sb.append(matrix[i][j]);
-                    f(sb, i, j, originalMask, wordsAndMasks);
-                    sb.setLength(0);
-                    originalMask.set(i, j, false);
+                    WordTrie.Cursor cursor = wordTrie.cursor();
+                    if (cursor != null) {
+                        originalMask.set(i, j, true);
+                        char ch = matrix[i][j];
+                        if (cursor.push(ch)) {
+                            sb.append(ch);
+                            f(sb, i, j, originalMask, wordsAndMasks, cursor);
+                            sb.setLength(0);
+                            cursor.pop();
+                        }
+                        originalMask.set(i, j, false);
+                    }
                 }
             }
         }
@@ -131,55 +138,65 @@ public class DefaultSolver implements Solver {
         return wordsAndMasks;
     }
 
-    private void f(@NonNull StringBuilder sb, int x, int y, @NonNull Mask mask, @NonNull Set<WordAndMask> wordsAndMasks) {
-        String word = sb.toString();
-        
-        if (sb.length() >= minWordLength && wordTrie.containsWord(word)) {
-            wordsAndMasks.add(new WordAndMask(word, mask.copy()));
+    private void f(@NonNull StringBuilder sb, int x, int y, @NonNull Mask mask, @NonNull Set<WordAndMask> wordsAndMasks, @NonNull WordTrie.Cursor cursor) {
+        if (sb.length() >= minWordLength && cursor.isWord()) {
+            wordsAndMasks.add(new WordAndMask(sb.toString(), mask.copy()));
         }
 
-        if (sb.length() > maxWordLength || !wordTrie.containsSubstring(word)) {
+        if (sb.length() >= maxWordLength) {
             return;
         }
 
         int x2 = x + 1;
-
         if (x2 < rows && !mask.get(x2, y)) {
-            mask.set(x2, y, true);
-            sb.append(matrix[x2][y]);
-            f(sb, x2, y, mask, wordsAndMasks);
-            sb.setLength(sb.length() - 1);
-            mask.set(x2, y, false);
+            char ch = matrix[x2][y];
+            if (cursor.push(ch)) {
+                mask.set(x2, y, true);
+                sb.append(ch);
+                f(sb, x2, y, mask, wordsAndMasks, cursor);
+                sb.setLength(sb.length() - 1);
+                mask.set(x2, y, false);
+                cursor.pop();
+            }
         }
 
         x2 = x - 1;
-
         if (x2 >= 0 && !mask.get(x2, y)) {
-            mask.set(x2, y, true);
-            sb.append(matrix[x2][y]);
-            f(sb, x2, y, mask, wordsAndMasks);
-            sb.setLength(sb.length() - 1);
-            mask.set(x2, y, false);
+            char ch = matrix[x2][y];
+            if (cursor.push(ch)) {
+                mask.set(x2, y, true);
+                sb.append(ch);
+                f(sb, x2, y, mask, wordsAndMasks, cursor);
+                sb.setLength(sb.length() - 1);
+                mask.set(x2, y, false);
+                cursor.pop();
+            }
         }
 
         int y2 = y + 1;
-
         if (y2 < cols && !mask.get(x, y2)) {
-            mask.set(x, y2, true);
-            sb.append(matrix[x][y2]);
-            f(sb, x, y2, mask, wordsAndMasks);
-            sb.setLength(sb.length() - 1);
-            mask.set(x, y2, false);
+            char ch = matrix[x][y2];
+            if (cursor.push(ch)) {
+                mask.set(x, y2, true);
+                sb.append(ch);
+                f(sb, x, y2, mask, wordsAndMasks, cursor);
+                sb.setLength(sb.length() - 1);
+                mask.set(x, y2, false);
+                cursor.pop();
+            }
         }
 
         y2 = y - 1;
-
         if (y2 >= 0 && !mask.get(x, y2)) {
-            mask.set(x, y2, true);
-            sb.append(matrix[x][y2]);
-            f(sb, x, y2, mask, wordsAndMasks);
-            sb.setLength(sb.length() - 1);
-            mask.set(x, y2, false);
+            char ch = matrix[x][y2];
+            if (cursor.push(ch)) {
+                mask.set(x, y2, true);
+                sb.append(ch);
+                f(sb, x, y2, mask, wordsAndMasks, cursor);
+                sb.setLength(sb.length() - 1);
+                mask.set(x, y2, false);
+                cursor.pop();
+            }
         }
     }
 

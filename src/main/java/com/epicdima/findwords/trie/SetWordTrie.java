@@ -28,6 +28,11 @@ public final class SetWordTrie implements WordTrie {
     }
 
     @Override
+    public WordTrie.Cursor cursor() {
+        return new SetCursor(this);
+    }
+
+    @Override
     public void insert(@NonNull String word) {
         words.add(word);
         final StringBuilder stringBuilder = new StringBuilder(word.length());
@@ -47,5 +52,40 @@ public final class SetWordTrie implements WordTrie {
     @Override
     public boolean containsWord(@NonNull String word) {
         return words.contains(word);
+    }
+
+    private static class SetCursor implements WordTrie.Cursor {
+        private final SetWordTrie trie;
+        private final StringBuilder sb = new StringBuilder(256);
+
+        public SetCursor(SetWordTrie trie) {
+            this.trie = trie;
+        }
+
+        @Override
+        public boolean push(int codePoint) {
+            sb.appendCodePoint(codePoint);
+            if (trie.substrings.contains(sb.toString())) {
+                return true;
+            } else {
+                sb.setLength(sb.length() - Character.charCount(codePoint));
+                return false;
+            }
+        }
+
+        @Override
+        public void pop() {
+            int length = sb.length();
+            if (length > 1 && Character.isSurrogatePair(sb.charAt(length - 2), sb.charAt(length - 1))) {
+                sb.setLength(length - 2);
+            } else {
+                sb.setLength(length - 1);
+            }
+        }
+
+        @Override
+        public boolean isWord() {
+            return trie.words.contains(sb.toString());
+        }
     }
 }

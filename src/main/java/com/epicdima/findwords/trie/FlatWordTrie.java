@@ -32,10 +32,7 @@ public final class FlatWordTrie implements WordTrie {
         this.maxCodePoint = maxCodePoint;
         this.nodeSize = abcLength + 1;
 
-        // Initial capacity for 1000 nodes
-        this.tree = new int[this.nodeSize * 1000];
-
-        // Root is always at offset 0
+        this.tree = new int[this.nodeSize * 1024];
         this.nextNodeOffset = this.nodeSize;
     }
 
@@ -92,9 +89,7 @@ public final class FlatWordTrie implements WordTrie {
             wordTrie.insert(word);
         }
 
-        // Memory optimization: cut off unused array tail
         wordTrie.trimToSize();
-
         return wordTrie;
     }
 
@@ -119,6 +114,11 @@ public final class FlatWordTrie implements WordTrie {
     }
 
     @Override
+    public WordTrie.Cursor cursor() {
+        return new FlatCursor(this);
+    }
+
+    @Override
     public void insert(@NonNull final String word) {
         final int wordLength = word.length();
         int offset = 0;
@@ -134,7 +134,7 @@ public final class FlatWordTrie implements WordTrie {
             int childOffsetIndex = offset + 1 + key;
             int nextOffset = tree[childOffsetIndex];
 
-            if (nextOffset == 0) { // No node found
+            if (nextOffset == 0) {
                 nextOffset = nextNodeOffset;
                 ensureCapacity(nextNodeOffset + nodeSize);
                 nextNodeOffset += nodeSize;
@@ -143,7 +143,7 @@ public final class FlatWordTrie implements WordTrie {
             offset = nextOffset;
         }
 
-        tree[offset] = 1; // isWord = true
+        tree[offset] = 1;
     }
 
     @Override
@@ -186,5 +186,41 @@ public final class FlatWordTrie implements WordTrie {
             if (offset == 0) return false;
         }
         return tree[offset] == 1;
+    }
+
+    private static class FlatCursor implements WordTrie.Cursor {
+        private final FlatWordTrie trie;
+        private final int[] path = new int[256];
+        private int depth = 0;
+
+        public FlatCursor(FlatWordTrie trie) {
+            this.trie = trie;
+            this.path[0] = 0;
+        }
+
+        @Override
+        public boolean push(int codePoint) {
+            int key = trie.getIndexForCodePoint(codePoint);
+            if (key == -1) {
+                return false;
+            }
+            int nextOffset = trie.tree[path[depth] + 1 + key];
+            if (nextOffset == 0) {
+                return false;
+            }
+            depth++;
+            path[depth] = nextOffset;
+            return true;
+        }
+
+        @Override
+        public void pop() {
+            depth--;
+        }
+
+        @Override
+        public boolean isWord() {
+            return trie.tree[path[depth]] == 1;
+        }
     }
 }

@@ -17,6 +17,19 @@ public interface WordTrie {
 
     boolean containsWord(@NonNull final String word);
 
+    default Cursor cursor() {
+        return null;
+    }
+
+    interface Cursor {
+
+        boolean push(int codePoint);
+
+        void pop();
+
+        boolean isWord();
+    }
+
     static void fill(@NonNull WordTrie wordTrie, @NonNull String dictionaryPath) {
         try {
             fill(wordTrie, new FileInputStream(dictionaryPath));

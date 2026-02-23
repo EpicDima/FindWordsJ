@@ -95,6 +95,11 @@ public final class ArrayWordTrie implements WordTrie {
     }
 
     @Override
+    public WordTrie.Cursor cursor() {
+        return new ArrayCursor(this, root);
+    }
+
+    @Override
     public void insert(@NonNull final String word) {
         final int wordLength = word.length();
         int index = 0;
@@ -189,6 +194,42 @@ public final class ArrayWordTrie implements WordTrie {
 
         public void setWord(boolean word) {
             isWord = word;
+        }
+    }
+
+    private static class ArrayCursor implements WordTrie.Cursor {
+        private final ArrayWordTrie trie;
+        private final Node[] path = new Node[256];
+        private int depth = 0;
+
+        public ArrayCursor(ArrayWordTrie trie, Node root) {
+            this.trie = trie;
+            this.path[0] = root;
+        }
+
+        @Override
+        public boolean push(int codePoint) {
+            int key = trie.getIndexForCodePoint(codePoint);
+            if (key == -1) {
+                return false;
+            }
+            Node nextNode = path[depth].nodes[key];
+            if (nextNode == null) {
+                return false;
+            }
+            depth++;
+            path[depth] = nextNode;
+            return true;
+        }
+
+        @Override
+        public void pop() {
+            depth--;
+        }
+
+        @Override
+        public boolean isWord() {
+            return path[depth].isWord;
         }
     }
 }
