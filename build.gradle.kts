@@ -27,6 +27,7 @@ dependencies {
 
     testImplementation(libs.jupiter.api)
     testRuntimeOnly(libs.jupiter.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     add("benchmarkImplementation", sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath)
 }

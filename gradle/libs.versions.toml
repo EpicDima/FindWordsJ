@@ -1,14 +1,15 @@
 [versions]
-kotlin = "2.0.21"
-junit-jupiter = "5.11.3"
-kotlinx-benchmark = "0.4.12"
+kotlin = "2.3.10"
+junit-jupiter = "6.0.3"
+kotlinx-benchmark = "0.4.16"
 
 [libraries]
-kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.9.0" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.10.2" }
 jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
 jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "junit-jupiter" }
 kotlinx-benchmark = { group = "org.jetbrains.kotlinx", name = "kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
-androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.9.0" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.9.1" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
