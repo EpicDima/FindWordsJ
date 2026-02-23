@@ -49,6 +49,7 @@ public interface WordTrie {
         }
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     static int[] getAbc(@NonNull String dictionaryPath) {
         try {
