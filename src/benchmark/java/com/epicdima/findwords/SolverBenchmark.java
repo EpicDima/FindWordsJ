@@ -38,6 +38,7 @@ public class SolverBenchmark {
             "BOOLEAN",
             "FLAT",
             "BITSET",
+            "LONG_ARRAY",
     })
     public String maskTypeName;
 
@@ -45,6 +46,7 @@ public class SolverBenchmark {
             "HASH",
             "ARRAY",
             "SET",
+            "FLAT",
     })
     public String wordTrieTypeName;
 
@@ -55,6 +57,8 @@ public class SolverBenchmark {
             "FORKJOIN",
             "COROUTINE",
             "DEEP_RECURSION",
+            "FAST_BITWISE",
+            "DANCING_LINKS",
     })
     public String solverTypeName;
 
