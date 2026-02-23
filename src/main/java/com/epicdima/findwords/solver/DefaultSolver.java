@@ -54,12 +54,9 @@ public class DefaultSolver implements Solver {
 
         words.addAll(findWords());
 
+        Mask invertedOriginalMask = originalMask.copy().invert();
         for (WordAndMask wordAndMask : words) {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    wordAndMask.mask().set(i, j, wordAndMask.mask().get(i, j) && !originalMask.get(i, j));
-                }
-            }
+            wordAndMask.mask().and(invertedOriginalMask);
         }
 
         if (fullMatch) {
@@ -117,12 +114,15 @@ public class DefaultSolver implements Solver {
     @NonNull
     private Set<WordAndMask> findWords() {
         Set<WordAndMask> wordsAndMasks = new HashSet<>();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (!originalMask.get(i, j)) {
                     originalMask.set(i, j, true);
-                    f(String.valueOf(matrix[i][j]), i, j, originalMask, wordsAndMasks);
+                    sb.append(matrix[i][j]);
+                    f(sb, i, j, originalMask, wordsAndMasks);
+                    sb.setLength(0);
                     originalMask.set(i, j, false);
                 }
             }
@@ -131,13 +131,14 @@ public class DefaultSolver implements Solver {
         return wordsAndMasks;
     }
 
-    @SuppressWarnings("DuplicatedCode")
-    private void f(@NonNull String word, int x, int y, @NonNull Mask mask, @NonNull Set<WordAndMask> wordsAndMasks) {
-        if (word.length() >= minWordLength && wordTrie.containsWord(word)) {
+    private void f(@NonNull StringBuilder sb, int x, int y, @NonNull Mask mask, @NonNull Set<WordAndMask> wordsAndMasks) {
+        String word = sb.toString();
+        
+        if (sb.length() >= minWordLength && wordTrie.containsWord(word)) {
             wordsAndMasks.add(new WordAndMask(word, mask.copy()));
         }
 
-        if (word.length() > maxWordLength || !wordTrie.containsSubstring(word)) {
+        if (sb.length() > maxWordLength || !wordTrie.containsSubstring(word)) {
             return;
         }
 
@@ -145,7 +146,9 @@ public class DefaultSolver implements Solver {
 
         if (x2 < rows && !mask.get(x2, y)) {
             mask.set(x2, y, true);
-            f(word + matrix[x2][y], x2, y, mask, wordsAndMasks);
+            sb.append(matrix[x2][y]);
+            f(sb, x2, y, mask, wordsAndMasks);
+            sb.setLength(sb.length() - 1);
             mask.set(x2, y, false);
         }
 
@@ -153,7 +156,9 @@ public class DefaultSolver implements Solver {
 
         if (x2 >= 0 && !mask.get(x2, y)) {
             mask.set(x2, y, true);
-            f(word + matrix[x2][y], x2, y, mask, wordsAndMasks);
+            sb.append(matrix[x2][y]);
+            f(sb, x2, y, mask, wordsAndMasks);
+            sb.setLength(sb.length() - 1);
             mask.set(x2, y, false);
         }
 
@@ -161,7 +166,9 @@ public class DefaultSolver implements Solver {
 
         if (y2 < cols && !mask.get(x, y2)) {
             mask.set(x, y2, true);
-            f(word + matrix[x][y2], x, y2, mask, wordsAndMasks);
+            sb.append(matrix[x][y2]);
+            f(sb, x, y2, mask, wordsAndMasks);
+            sb.setLength(sb.length() - 1);
             mask.set(x, y2, false);
         }
 
@@ -169,7 +176,9 @@ public class DefaultSolver implements Solver {
 
         if (y2 >= 0 && !mask.get(x, y2)) {
             mask.set(x, y2, true);
-            f(word + matrix[x][y2], x, y2, mask, wordsAndMasks);
+            sb.append(matrix[x][y2]);
+            f(sb, x, y2, mask, wordsAndMasks);
+            sb.setLength(sb.length() - 1);
             mask.set(x, y2, false);
         }
     }
